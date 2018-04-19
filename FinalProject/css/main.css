@@ -1,0 +1,49 @@
+/*
+    main.css
+*/
+
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #686868;
+    color: #FFFFFF;
+}
+
+/* -------------------------------------------------------------- */
+/* Game Area Rules */
+
+#gameArea {
+    width: 800px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;	
+    overflow: auto;
+    border: 1px solid white;
+    background-color: "343434";
+    color: white;
+    padding:  10px;
+}
+
+/* -------------------------------------------------------------- */
+/*  Some font colors */
+
+.text-white {
+    color: #FFFFF0;
+}
+
+/* -------------------------------------------------------------- */
+/* Alignment Rules */
+
+.center-text {
+    text-align: center;
+}
+
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding:  10px;
+}
+
