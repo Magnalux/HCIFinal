@@ -32,7 +32,7 @@
                     game.load.image('graybox', 'img/Graybox.png');
                     game.load.image('whitebox', 'img/Whitebox.png');
                     game.load.image('ground', 'img/Ground.png');
-                    game.load.image('square', 'img/Square.png');
+                    game.load.image('square', 'img/SmallSquare.png');
                 }
 
                 function create () {
@@ -71,8 +71,8 @@
                     shapeStats.square = new Object();
                     shapeStats.square.jumpSpeed = 250;
                     shapeStats.square.moveSpeed = 100;
-                    shapeStats.square.width = 25;
-                    shapeStats.square.height = 25;
+                    //shapeStats.square.width = 25;
+                    //shapeStats.square.height = 25;
                     
                     
                     
@@ -164,8 +164,8 @@
                         case ("square"):
                             shape.jumpSpeed = shapeStats.square.jumpSpeed;
                             shape.moveSpeed = shapeStats.square.moveSpeed;
-                            shape.width = shapeStats.square.width;
-                            shape.height = shapeStats.square.height;
+                            //shape.width = shapeStats.square.width;
+                            //shape.height = shapeStats.square.height;
                             break;
                     }
                     shape.body.setCollisionGroup(shapeCollisionGroup);
@@ -242,8 +242,8 @@
                         case ("square"):
                             newShape.jumpSpeed = shapeStats.square.jumpSpeed;
                             newShape.moveSpeed = shapeStats.square.moveSpeed;
-                            newShape.width = shapeStats.square.width;
-                            newShape.height = shapeStats.square.height;
+                            //newShape.width = shapeStats.square.width;
+                            //newShape.height = shapeStats.square.height;
                             break;
                     }
                     newShape.body.setCollisionGroup(shapeCollisionGroup);
