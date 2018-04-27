@@ -80,21 +80,18 @@
                     shapeStats.square.jumpSpeed = 250;
                     shapeStats.square.maxJumpCount = 3;
                     shapeStats.square.currJumpCount = shapeStats.square.maxJumpCount;
-                    shapeStats.square.prevY = 0;
                     shapeStats.square.moveSpeed = 100;
                     //Triangle Stats
                     shapeStats.triangle = new Object();
                     shapeStats.triangle.jumpSpeed = 250;
                     shapeStats.triangle.maxJumpCount = 3;
                     shapeStats.triangle.currJumpCount = shapeStats.square.maxJumpCount;
-                    shapeStats.triangle.prevY = 0;
                     shapeStats.triangle.moveSpeed = 100;
                     //Circle Stats
                     shapeStats.circle = new Object();
                     shapeStats.circle.jumpSpeed = 250;
                     shapeStats.circle.maxJumpCount = 2;
                     shapeStats.circle.currJumpCount = shapeStats.square.maxJumpCount;
-                    shapeStats.circle.prevY = 0;
                     shapeStats.circle.moveSpeed = 100;
                     
                     
@@ -190,17 +187,24 @@
                             shape.maxJumpCount = shapeStats.square.maxJumpCount;
                             shape.currJumpCount = shapeStats.square.currJumpCount;
                             shape.moveSpeed = shapeStats.square.moveSpeed;
-                            shape.body.fixedRotation = true;
+                            shape.prevY = 0;
+                            //shape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
                             shape.jumpSpeed = shapeStats.triangle.jumpSpeed;
                             shape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            shape.maxJumpCount = shapeStats.triangle.maxJumpCount;
+                            shape.currJumpCount = shapeStats.triangle.currJumpCount;
+                            shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Triangle");
                             break;
                         case ("circle"):
                             shape.jumpSpeed = shapeStats.circle.jumpSpeed;
                             shape.moveSpeed = shapeStats.circle.moveSpeed;
+                            shape.maxJumpCount = shapeStats.circle.maxJumpCount;
+                            shape.currJumpCount = shapeStats.circle.currJumpCount;
+                            shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Circle");
                             break;
@@ -209,7 +213,7 @@
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
                     shape.body.kinematic = true;
-                    shape.body.friction = 1.0;
+                    shape.body.friction = 200.0;
                     
                     return shape;
                     
@@ -248,7 +252,7 @@
                         shape.body.velocity.x *= 0.9;
                     });
                     
-                    if (gameState.activeShape.body.velocity.y == gameState.activeShape.prevY){
+                    if (Math.round(gameState.activeShape.body.velocity.y) == Math.round(gameState.activeShape.prevY)){
                         gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount;
                     }
                     
@@ -308,17 +312,24 @@
                             newShape.maxJumpCount = shapeStats.square.maxJumpCount;
                             newShape.currJumpCount = shapeStats.square.currJumpCount;
                             newShape.moveSpeed = shapeStats.square.moveSpeed;
-                            newShape.body.fixedRotation = true;
+                            newShape.prevY = 0;
+                            //newShape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
                             newShape.jumpSpeed = shapeStats.triangle.jumpSpeed;
                             newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.maxJumpCount = shapeStats.triangle.maxJumpCount;
+                            newShape.currJumpCount = shapeStats.triangle.currJumpCount;
+                            newShape.prevY = 0;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Triangle");
                             break;
                         case ("circle"):
                             newShape.jumpSpeed = shapeStats.circle.jumpSpeed;
-                            newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.moveSpeed = shapeStats.circle.moveSpeed;
+                            newShape.maxJumpCount = shapeStats.circle.maxJumpCount;
+                            newShape.currJumpCount = shapeStats.circle.currJumpCount;
+                            newShape.prevY = 0;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Circle");
                             break;
@@ -327,7 +338,7 @@
                     newShape.body.collides(shapeCollisionGroup);
                     newShape.body.collides(objectCollisionGroup);
                     newShape.body.kinematic = false;
-                    newShape.body.friction = 1.0;
+                    newShape.body.friction = 200.0;
                     newShape.body.angle = angle;
                     
                     return newShape;
