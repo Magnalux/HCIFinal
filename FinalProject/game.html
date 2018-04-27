@@ -32,7 +32,12 @@
                     game.load.image('graybox', 'img/Graybox.png');
                     game.load.image('whitebox', 'img/Whitebox.png');
                     game.load.image('ground', 'img/Ground.png');
-                    game.load.image('square', 'img/SmallSquare.png');
+                    game.load.image('square', 'img/Square.png');
+                    game.load.image('triangle', 'img/Triangle.png');
+                    game.load.image('circle', 'img/Circle.png');
+                    game.load.image('rectangle', 'img/Rectangle.png');
+                    game.load.image('smallsquare', 'img/SmallSquare.png');
+                    game.load.physics('physics', 'json/Hitboxes.json');
                 }
 
                 function create () {
@@ -60,19 +65,28 @@
                     
                     
                     //NOTE: phaser objects can only be in one group at a time!
-                    //Initialize shapes and their general stats
+                    //Initialize shapes container
                     shapes = game.add.group();
                     shapes.enableBody = true;
                     shapes.physicsBodyType = Phaser.Physics.P2JS;
                     shapes.numShapes = 0;
                     shapes.nextShape = 1;
                     shapeArr = new Array();
+                    
+                    //Initialize shapestats
                     shapeStats = new Object();
+                    //Square Stats
                     shapeStats.square = new Object();
                     shapeStats.square.jumpSpeed = 250;
                     shapeStats.square.moveSpeed = 100;
-                    //shapeStats.square.width = 25;
-                    //shapeStats.square.height = 25;
+                    //Triangle Stats
+                    shapeStats.triangle = new Object();
+                    shapeStats.triangle.jumpSpeed = 250;
+                    shapeStats.triangle.moveSpeed = 100;
+                    //Circle Stats
+                    shapeStats.circle = new Object();
+                    shapeStats.circle.jumpSpeed = 250;
+                    shapeStats.circle.moveSpeed = 100;
                     
                     
                     
@@ -129,7 +143,8 @@
                         //Make the first fighter be the one that is active first
                         var shape = spawnShape(MAP_WIDTH/2 - 40, game.height - 120, "square");
                         switchShape(shape);
-                        shape = spawnShape(MAP_WIDTH/2 + 200, game.height - 120, "square");
+                        shape = spawnShape(MAP_WIDTH/2 + 200, game.height - 120, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 260, game.height - 120, "triangle");
                         
                     }
                 }
@@ -164,14 +179,24 @@
                         case ("square"):
                             shape.jumpSpeed = shapeStats.square.jumpSpeed;
                             shape.moveSpeed = shapeStats.square.moveSpeed;
-                            //shape.width = shapeStats.square.width;
-                            //shape.height = shapeStats.square.height;
+                            shape.body.fixedRotation = true;
+                            break;
+                        case ("triangle"):
+                            shape.jumpSpeed = shapeStats.triangle.jumpSpeed;
+                            shape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            shape.body.clearShapes();
+                            shape.body.loadPolygon("physics", "Triangle");
+                            break;
+                        case ("circle"):
+                            shape.jumpSpeed = shapeStats.circle.jumpSpeed;
+                            shape.moveSpeed = shapeStats.circle.moveSpeed;
+                            shape.body.clearShapes();
+                            shape.body.loadPolygon("physics", "Circle");
                             break;
                     }
                     shape.body.setCollisionGroup(shapeCollisionGroup);
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
-                    shape.body.fixedRotation = true;
                     shape.body.kinematic = true;
                     shape.body.friction = 1.0;
                     
@@ -216,8 +241,20 @@
                 function getShapeSprite(type) {
                     var tileSheet;
                     switch (type) {
-                            case("square"):
+                        case ("square"):
                             tileSheet = "square";
+                            break;
+                        case ("triangle"):
+                            tileSheet = "triangle";
+                            break;
+                        case ("circle"):
+                            tileSheet = "circle";
+                            break;
+                        case ("rectangle"):
+                            tileSheet = "rectangle";
+                            break;
+                        case ("smallsquare"):
+                            tileSheet = "smallsquare";
                             break;
                     }
                     
@@ -229,6 +266,7 @@
                     var yPos = shape.position.y;
                     var type = shape.shapeType;
                     var tilesheet = getShapeSprite(type);
+                    var angle = shape.body.angle;
                     
                     var newShape;
                     shapes.remove(shape);
@@ -242,18 +280,27 @@
                         case ("square"):
                             newShape.jumpSpeed = shapeStats.square.jumpSpeed;
                             newShape.moveSpeed = shapeStats.square.moveSpeed;
-                            //newShape.width = shapeStats.square.width;
-                            //newShape.height = shapeStats.square.height;
+                            newShape.body.fixedRotation = true;
+                            break;
+                        case ("triangle"):
+                            newShape.jumpSpeed = shapeStats.triangle.jumpSpeed;
+                            newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.body.clearShapes();
+                            newShape.body.loadPolygon("physics", "Triangle");
+                            break;
+                        case ("circle"):
+                            newShape.jumpSpeed = shapeStats.circle.jumpSpeed;
+                            newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.body.clearShapes();
+                            newShape.body.loadPolygon("physics", "Circle");
                             break;
                     }
                     newShape.body.setCollisionGroup(shapeCollisionGroup);
-                    newShape.body.width = newShape.width;
-                    newShape.body.height = newShape.height;
                     newShape.body.collides(shapeCollisionGroup);
                     newShape.body.collides(objectCollisionGroup);
-                    newShape.body.fixedRotation = true;
                     newShape.body.kinematic = false;
                     newShape.body.friction = 1.0;
+                    newShape.body.angle = angle;
                     
                     return newShape;
                     
@@ -266,6 +313,7 @@
                         gameState.activeShape.body.velocity.x = 0;
                         gameState.activeShape.body.velocity.y = 0;
                         gameState.activeShape.body.kinematic = true;
+                        gameState.activeShape.body.fixedRotation = true;
                         gameState.activeShape = null;
                     }
                     newShape = copyShape(newShape);
