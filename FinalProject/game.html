@@ -78,14 +78,17 @@
                     //Square Stats
                     shapeStats.square = new Object();
                     shapeStats.square.jumpSpeed = 250;
+                    shapeStats.square.maxJumpCount = 3;
                     shapeStats.square.moveSpeed = 100;
                     //Triangle Stats
                     shapeStats.triangle = new Object();
                     shapeStats.triangle.jumpSpeed = 250;
+                    shapeStats.triangle.maxJumpCount = 3;
                     shapeStats.triangle.moveSpeed = 100;
                     //Circle Stats
                     shapeStats.circle = new Object();
                     shapeStats.circle.jumpSpeed = 250;
+                    shapeStats.circle.maxJumpCount = 2;
                     shapeStats.circle.moveSpeed = 100;
                     
                     
@@ -178,18 +181,27 @@
                     switch (shape.shapeType) {
                         case ("square"):
                             shape.jumpSpeed = shapeStats.square.jumpSpeed;
+                            shape.maxJumpCount = shapeStats.square.maxJumpCount;
+                            shape.currJumpCount = shapeStats.square.maxJumpCount;
                             shape.moveSpeed = shapeStats.square.moveSpeed;
-                            shape.body.fixedRotation = true;
+                            shape.prevY = 0;
+                            //shape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
                             shape.jumpSpeed = shapeStats.triangle.jumpSpeed;
                             shape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            shape.maxJumpCount = shapeStats.triangle.maxJumpCount;
+                            shape.currJumpCount = shapeStats.triangle.maxJumpCount;
+                            shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Triangle");
                             break;
                         case ("circle"):
                             shape.jumpSpeed = shapeStats.circle.jumpSpeed;
                             shape.moveSpeed = shapeStats.circle.moveSpeed;
+                            shape.maxJumpCount = shapeStats.circle.maxJumpCount;
+                            shape.currJumpCount = shapeStats.circle.maxJumpCount;
+                            shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Circle");
                             break;
@@ -198,7 +210,7 @@
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
                     shape.body.kinematic = true;
-                    shape.body.friction = 1.0;
+                    shape.body.friction = 200.0;
                     
                     return shape;
                     
@@ -236,6 +248,24 @@
                         //Slowly stopping the shape
                         shape.body.velocity.x *= 0.9;
                     });
+                    
+                    //Check for falling off ledge without jumping
+                    if (gameState.activeShape.body.velocity.y > 0){
+                        if(Math.round(gameState.activeShape.prevY) == 0){
+                            if (gameState.activeShape.currJumpCount == gameState.activeShape.maxJumpCount){
+                                gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount - 1;
+                            }
+                        }
+                    }
+                    
+                    //Check for jump reset
+                    if (Math.round(gameState.activeShape.body.velocity.y) == Math.round(gameState.activeShape.prevY)){
+                        gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount;
+                    }
+                    
+                    //Updating shape's previous y velocity
+                    gameState.activeShape.prevY = gameState.activeShape.body.velocity.y;
+                    
                 }
                 
                 function getShapeSprite(type) {
@@ -279,18 +309,30 @@
                     switch (newShape.shapeType) {
                         case ("square"):
                             newShape.jumpSpeed = shapeStats.square.jumpSpeed;
+                            newShape.maxJumpCount = shapeStats.square.maxJumpCount;
+                            newShape.currJumpCount = 0;
                             newShape.moveSpeed = shapeStats.square.moveSpeed;
-                            newShape.body.fixedRotation = true;
+                            newShape.prevY = 0;
+                            newShape.body.velocity.y = 1;
+                            //newShape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
                             newShape.jumpSpeed = shapeStats.triangle.jumpSpeed;
+                            newShape.maxJumpCount = shapeStats.triangle.maxJumpCount;
+                            newShape.currJumpCount = 0;
                             newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.prevY = 0;
+                            newShape.body.velocity.y = 1;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Triangle");
                             break;
                         case ("circle"):
                             newShape.jumpSpeed = shapeStats.circle.jumpSpeed;
-                            newShape.moveSpeed = shapeStats.triangle.moveSpeed;
+                            newShape.maxJumpCount = shapeStats.circle.maxJumpCount;
+                            newShape.currJumpCount = 0;
+                            newShape.moveSpeed = shapeStats.circle.moveSpeed;
+                            newShape.prevY = 0;
+                            newShape.body.velocity.y = 1;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Circle");
                             break;
@@ -299,7 +341,7 @@
                     newShape.body.collides(shapeCollisionGroup);
                     newShape.body.collides(objectCollisionGroup);
                     newShape.body.kinematic = false;
-                    newShape.body.friction = 1.0;
+                    newShape.body.friction = 200.0;
                     newShape.body.angle = angle;
                     
                     return newShape;
@@ -433,7 +475,9 @@
                     
                     switch (inputManager.state) {
                         case ("move"):
-                            shapeJump();
+                            if (gameState.activeShape.currJumpCount > 0) {
+                                shapeJump();
+                            }
                             break;
                     }
                 }
@@ -442,8 +486,10 @@
                     console.log("Shape jumped");
                     
                     if (gameState.activeShape != null) {
-                        gameState.activeShape.body.velocity.y -= gameState.activeShape.jumpSpeed;
+                        gameState.activeShape.body.velocity.y = -gameState.activeShape.jumpSpeed;
                     }
+                    
+                    gameState.activeShape.currJumpCount--;
                 }
                 
                 function shapeMoveLeft() {
