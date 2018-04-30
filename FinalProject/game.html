@@ -28,15 +28,23 @@
                 var inputKeys;
 
                 function preload () {
+                    game.load.image('trapplatform', 'img/trapplatform.png');
+                    game.load.image('keyoff', 'img/keyOff.png');
+                    game.load.image('keyon', 'img/keyOn.png');
+                    game.load.image('mp1', 'img/movingPlatform.png');
+                    game.load.image('doorclosed', 'img/doorclosed.png');
+                    game.load.image('dooropen', 'img/dooropen.png');
+                    game.load.image('floorbutton', 'img/button.png');
                     game.load.image('blackbox', 'img/Blackbox.png');
                     game.load.image('graybox', 'img/Graybox.png');
                     game.load.image('whitebox', 'img/Whitebox.png');
-                    game.load.image('ground', 'img/Ground.png');
+                    game.load.image('ground', 'img/Ground2.png');
                     game.load.image('square', 'img/Square.png');
                     game.load.image('triangle', 'img/Triangle.png');
                     game.load.image('circle', 'img/Circle.png');
                     game.load.image('rectangle', 'img/Rectangle.png');
                     game.load.image('smallsquare', 'img/SmallSquare.png');
+                    game.load.image('bg', 'img/bg.png');
                     game.load.physics('physics', 'json/Hitboxes.json');
                 }
 
@@ -57,13 +65,21 @@
                     
                     
                     //Initialize background
-                    var background = game.add.sprite(0, 0, 'whitebox');
+                    var background = game.add.sprite(0, 0, 'bg');
                     background.width = game.width;
                     background.height = game.height;
                     background.fixedToCamera = true;
                     
-                    
-                    
+                    //Remove later. Used to display various art assets.
+                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 380, 480, 'doorclosed');
+                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 320, 480, 'dooropen');
+                    var fbutton = game.add.sprite(MAP_WIDTH/2- 180, 540, 'keyoff');
+                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 140, 540, 'keyon');
+                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 240, 550, 'floorbutton');
+                    //Adds moving platform
+                    var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
+                    game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
+                     
                     //NOTE: phaser objects can only be in one group at a time!
                     //Initialize shapes container
                     shapes = game.add.group();
