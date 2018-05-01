@@ -28,6 +28,7 @@
                 var inputKeys;
 
                 function preload () {
+                    game.load.image('ground', 'img/ground.png');
                     game.load.image('trapplatform', 'img/trapplatform.png');
                     game.load.image('keyoff', 'img/keyOff.png');
                     game.load.image('keyon', 'img/keyOn.png');
@@ -71,11 +72,11 @@
                     background.fixedToCamera = true;
                     
                     //Remove later. Used to display various art assets.
-                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 380, 480, 'doorclosed');
-                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 320, 480, 'dooropen');
-                    var fbutton = game.add.sprite(MAP_WIDTH/2- 180, 540, 'keyoff');
-                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 140, 540, 'keyon');
-                    var fbutton = game.add.sprite(MAP_WIDTH/2 - 240, 550, 'floorbutton');
+                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 380, 480, 'doorclosed');
+                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 320, 480, 'dooropen');
+                    //var fbutton = game.add.sprite(MAP_WIDTH/2- 180, 540, 'keyoff');
+                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 140, 540, 'keyon');
+                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 240, 550, 'floorbutton');
                     //Adds moving platform
                     var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
                     game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
