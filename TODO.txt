@@ -1,0 +1,44 @@
+Overall Issues:
+	-Death and Respawn
+	-Circle functionality
+	-Shape Art
+	-Platform/Object Art
+	-Main Menu, Opening/Closing Screen
+	-Determine Shape Stats
+	-Shapes fading out as they run out of jumps
+	-Inactive Shapes being more transparent
+	-Completing a level
+	-Level Design & Implementing
+	-Evaluation
+	-Presentation Prep & Slides
+	-Written Document
+		-Adjust Executive Summary
+		-Design Section
+		-Architecture Section
+		-Conclusion					?
+		-Polish (contributions, table of contents)	?
+
+
+Bryce:
+	-Level Design & Implementing (Demo Levels)
+	-Adjust Executive Summary
+	-Architecture Section
+
+Ben:
+	-Completing a level
+	-Determine Shape Stats
+	-Shapes fading out as they run out of jumps
+	-Inactive Shapes being more transparent
+
+Haley:
+	-Main Menu, Opening/Closing Screen
+	-Presentation Prep & Slides
+	-Evaluation
+
+Kaitlyn:
+	-Death and Respawn
+	-Circle functionality
+	-Shape Art
+	-Platform/Object Art
+	-Presentation Prep & Slides
+	-Design Section
