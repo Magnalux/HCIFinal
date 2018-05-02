@@ -15,6 +15,7 @@
             window.onload = function() {
                 var MAP_WIDTH = 4000;
                 var MAP_HEIGHT = 800;
+                var ICON_WIDTH = 80;
                 var GRAVITY = 400;
                 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameArea', { preload: preload, create: create, update: update });
                 var objectCollisionGroup;
@@ -26,6 +27,7 @@
                 var currentLevel;
                 var gameState;
                 var inputKeys;
+                var hud;
 
                 function preload () {
                     game.load.image('trapplatform', 'img/trapplatform.png');
@@ -45,6 +47,9 @@
                     game.load.image('rectangle', 'img/Rectangle.png');
                     game.load.image('smallsquare', 'img/SmallSquare.png');
                     game.load.image('bg', 'img/bg.png');
+                    game.load.image('activeiconoverlay', 'img/IconOverlay.png');
+                    game.load.image('iconbackground', 'img/IconBackground.png');
+                    game.load.image('iconborder', 'img/IconBorder.png');
                     game.load.physics('physics', 'json/Hitboxes.json');
                 }
 
@@ -77,8 +82,8 @@
                     var fbutton = game.add.sprite(MAP_WIDTH/2 - 140, 540, 'keyon');
                     var fbutton = game.add.sprite(MAP_WIDTH/2 - 240, 550, 'floorbutton');
                     //Adds moving platform
-                    var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
-                    game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
+                    //var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
+                    //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
                      
                     //NOTE: phaser objects can only be in one group at a time!
                     //Initialize shapes container
@@ -86,7 +91,7 @@
                     shapes.enableBody = true;
                     shapes.physicsBodyType = Phaser.Physics.P2JS;
                     shapes.numShapes = 0;
-                    shapes.nextShape = 1;
+                    shapes.nextShape = 0;
                     shapeArr = new Array();
                     
                     //Initialize shapestats
@@ -125,8 +130,17 @@
                     inputManager.key_D.onDown.add(dPressed, this);
                     inputManager.key_S = game.input.keyboard.addKey(Phaser.Keyboard.S);
                     inputManager.key_S.onDown.add(sPressed, this);
+                    inputManager.key_Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+                    inputManager.key_Q.onDown.add(qPressed, this);
+                    inputManager.key_E = game.input.keyboard.addKey(Phaser.Keyboard.E);
+                    inputManager.key_E.onDown.add(ePressed, this);
                     inputManager.key_SPACEBAR = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
                     inputManager.key_SPACEBAR.onDown.add(spacePressed, this);
+                    
+                    
+                    
+                    //Initialize the HUD
+                    hud = new Object();
 
                     
                     
@@ -166,6 +180,9 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, game.height - 120, "triangle");
                         
                     }
+                    
+                    //Reset the HUD to match the new shapes
+                    resetHUD();
                 }
                 
                 function deleteLevel() {
@@ -236,6 +253,7 @@
                     updateShapes();
                     
                     processInput();
+                    updateHUD();
                 }
                 
                 function processInput() {
@@ -257,6 +275,71 @@
                     if (inputManager.key_SPACEBAR.isDown) {
                         spaceDown();
                     }
+                }
+                
+                function updateHUD() {
+                    hud.iconBackgrounds.forEach(function(icon) {
+                        game.world.bringToTop(icon);
+                    });
+                    hud.iconBorders.forEach(function(icon) {
+                        game.world.bringToTop(icon);
+                    });
+                    hud.icons.forEach(function(icon) {
+                        game.world.bringToTop(icon);
+                    });
+                    
+                    hud.activeIcon.cameraOffset.x = ICON_WIDTH * shapeArr.indexOf(gameState.activeShape)
+                    console.log(hud.activeIcon.cameraOffset.x);
+                    game.world.bringToTop(hud.activeIcon);
+                    
+                }
+                
+                function resetHUD() {
+                    if (hud.iconBackgrounds != null) {
+                        hud.iconBackgrounds.destroy();
+                    }
+                    hud.iconBackgrounds = game.add.group();
+                    if (hud.iconBorders != null) {
+                        hud.iconBorders.destroy();
+                    }
+                    hud.iconBorders = game.add.group();
+                    if (hud.icons != null) {
+                        hud.icons.destroy();
+                    }
+                    hud.icons = game.add.group();
+                    if (hud.activeIcon != null) {
+                        hud.activeIcon.destroy();
+                    }
+                    hud.activeIcon = game.add.sprite(0, game.height - ICON_WIDTH, "activeiconoverlay");
+                    hud.activeIcon.fixedToCamera = true;
+                    hud.activeIcon.cameraOffset.x = 0;
+                    hud.activeIcon.cameraOffset.y = game.height - ICON_WIDTH;
+                    
+                    shapes.forEach(function(shape) {
+                        var index = shapeArr.indexOf(shape);
+                        var xPos = (ICON_WIDTH * index) + (ICON_WIDTH / 2) - (shape.width / 2);
+                        var yPos = game.height - ((ICON_WIDTH / 2) + (shape.height / 2));
+                        var shapeIconSprite = hud.icons.create(xPos, yPos, getShapeSprite(shape.shapeType));
+                        
+                        shapeIconSprite.fixedToCamera = true;
+                        
+                        shapeIconSprite.cameraOffset.x = xPos;
+                        shapeIconSprite.cameraOffset.y = yPos;
+                    });
+                    
+                    var xPos = 0;
+                    var yPos = game.height - ICON_WIDTH;
+                    hud.icons.forEach(function(icon) {
+                        var sprite = hud.iconBackgrounds.create(xPos, yPos, "iconbackground");
+                        sprite.fixedToCamera = true;
+                        sprite.cameraOffset.x = xPos;
+                        sprite.cameraOffset.y = yPos;
+                        sprite = hud.iconBorders.create(xPos, yPos, "iconborder");
+                        sprite.fixedToCamera = true;
+                        sprite.cameraOffset.x = xPos;
+                        sprite.cameraOffset.y = yPos;
+                        xPos += ICON_WIDTH;
+                    });
                 }
                 
                 function updateShapes() {
@@ -380,10 +463,14 @@
                     game.camera.follow(gameState.activeShape);
                 }
                 
-                function nextTurn() {
-                    console.log(shapes.nextShape % shapes.numShapes);
+                function toPrevShape() {
+                    shapes.nextShape--;
                     switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
+                }
+                
+                function toNextShape() {
                     shapes.nextShape++;
+                    switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
                 }
                 
                 
@@ -411,7 +498,6 @@
                     switch (inputManager.state) {
                         case ("move"):
                             //No Function
-                            nextTurn();
                             break;
                     }
                 }
@@ -472,6 +558,26 @@
                     switch (inputManager.state) {
                         case ("move"):
                             //No Function
+                            break;
+                    }
+                }
+                
+                function qPressed() {
+                    console.log("Q Pressed");
+                    
+                    switch (inputManager.state) {
+                        case ("move"):
+                            toPrevShape();
+                            break;
+                    }
+                }
+                
+                function ePressed() {
+                    console.log("E Pressed");
+                    
+                    switch (inputManager.state) {
+                        case ("move"):
+                            toNextShape();
                             break;
                     }
                 }
