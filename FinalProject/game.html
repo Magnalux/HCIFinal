@@ -14,7 +14,7 @@
 
             window.onload = function() {
                 var MAP_WIDTH = 4000;
-                var MAP_HEIGHT = 800;
+                var MAP_HEIGHT = 1000;
                 var ICON_WIDTH = 80;
                 var GRAVITY = 400;
                 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameArea', { preload: preload, create: create, update: update });
@@ -28,6 +28,8 @@
                 var gameState;
                 var inputKeys;
                 var hud;
+                var startMenu;
+                var level;
 
                 function preload () {
                     game.load.image('ground', 'img/ground.png');
@@ -51,6 +53,25 @@
                     game.load.image('activeiconoverlay', 'img/IconOverlay.png');
                     game.load.image('iconbackground', 'img/IconBackground.png');
                     game.load.image('iconborder', 'img/IconBorder.png');
+                    game.load.image('sharp_100', 'img/100platform.png');
+                    game.load.image('sharp_200', 'img/200platform.png');
+                    game.load.image('sharp_400', 'img/400platform.png');
+                    game.load.image('sharp_600', 'img/600platform.png');
+                    game.load.image('sharp_800', 'img/800platform.png');
+                    game.load.image('sharpround_100', 'img/100roundplatform.png');
+                    game.load.image('sharpround_200', 'img/round200platform.png');
+                    game.load.image('sharpround_400', 'img/round400platform.png');
+                    game.load.image('sharpround_600', 'img/round600platform.png');
+                    game.load.image('sharpround_800', 'img/round800platform.png');
+                    game.load.image('fullround_100', 'img/100doublerounded.png');
+                    game.load.image('fullround_200', 'img/200rounded.png');
+                    game.load.image('fullround_400', 'img/400doublerounded.png');
+                    game.load.image('fullround_600', 'img/600doublerounded.png');
+                    game.load.image('fullround_800', 'img/800doublerounded.png');
+                    game.load.image('dooropen', 'img/doorgreen.png');
+                    game.load.image('doorclosed', 'img/doorred.png');
+                    game.load.image('inactivekey', 'img/doorkeyred.png');
+                    game.load.image('activekey', 'img/doorkeygreen.png');
                     game.load.physics('physics', 'json/Hitboxes.json');
                 }
 
@@ -70,11 +91,14 @@
                     
                     
                     
+                    //Initialize the level
+                    level = new Object();
+                    level.keys = game.add.group();
                     //Initialize background
-                    var background = game.add.sprite(0, 0, 'bg');
-                    background.width = game.width;
-                    background.height = game.height;
-                    background.fixedToCamera = true;
+                    level.background = game.add.sprite(0, 0, 'bg');
+                    level.background.width = game.width;
+                    level.background.height = game.height;
+                    level.background.fixedToCamera = true;
                     
                     //Remove later. Used to display various art assets.
                     //var fbutton = game.add.sprite(MAP_WIDTH/2 - 380, 480, 'doorclosed');
@@ -100,18 +124,18 @@
                     //Square Stats
                     shapeStats.square = new Object();
                     shapeStats.square.jumpSpeed = 250;
-                    shapeStats.square.maxJumpCount = 3;
+                    shapeStats.square.maxJumpCount = 1;
                     shapeStats.square.moveSpeed = 100;
                     //Triangle Stats
                     shapeStats.triangle = new Object();
-                    shapeStats.triangle.jumpSpeed = 250;
-                    shapeStats.triangle.maxJumpCount = 3;
+                    shapeStats.triangle.jumpSpeed = 300;
+                    shapeStats.triangle.maxJumpCount = 2;
                     shapeStats.triangle.moveSpeed = 100;
                     //Circle Stats
                     shapeStats.circle = new Object();
                     shapeStats.circle.jumpSpeed = 250;
-                    shapeStats.circle.maxJumpCount = 2;
-                    shapeStats.circle.moveSpeed = 100;
+                    shapeStats.circle.maxJumpCount = 1;
+                    shapeStats.circle.moveSpeed = 85;
                     
                     
                     
@@ -151,9 +175,16 @@
                     
                     
                     
+                    //Initialize the Start Menu
+                    startMenu = new Object();
+                    //Game Logo Sprite
+                    //Start Button
+                    
+                    
+                    
                     //Initialize the level
-                    currentLevel = 0;
-                    loadLevel(currentLevel);
+                    currentLevel = -1;
+                    levelComplete();
                 }
                 
                 function loadLevel(levelIdx) {
@@ -164,32 +195,53 @@
                     objects.enableBody = true;
                     objects.physicsBodyType = Phaser.Physics.P2JS;
                     
-                    var ground = spawnObject(MAP_WIDTH / 2, game.height - 10, 'ground', true);
-                    
-                    ground.body.friction = 1.0;
-                    
-                    
                     if (levelIdx == 0) {
                         //Load Level 0
                         //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'sharp_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 400, 'fullround_200', true);
+                        platform = spawnObject(MAP_WIDTH / 2 - 300, MAP_HEIGHT - 275, 'fullround_100', true);
+                        platform = spawnObject(MAP_WIDTH / 2 + 600, MAP_HEIGHT - 500, 'fullround_800', true);
+                        platform = spawnObject(MAP_WIDTH / 2 + 378, MAP_HEIGHT - 489, 'sharpround_600', true);
+                        platform.body.angle = -90;
+                        var key = level.keys.create(platform.x + 100, platform.y - 80, 'inactivekey');
                         
                         //Load the fighters
                         //Make the first fighter be the one that is active first
-                        var shape = spawnShape(MAP_WIDTH/2 - 40, game.height - 120, "square");
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
                         switchShape(shape);
-                        shape = spawnShape(MAP_WIDTH/2 + 200, game.height - 120, "circle");
-                        shape = spawnShape(MAP_WIDTH/2 + 260, game.height - 120, "triangle");
+                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
+                    } else {
+                        //End game function
                     }
                     
                     //Reset the HUD to match the new shapes
                     resetHUD();
                 }
                 
+                function levelComplete() {
+                    currentLevel++;
+                    loadLevel(currentLevel);
+                }
+                
+                function resetLevel() {
+                    loadLevel(currentLevel);
+                }
+                
                 function deleteLevel() {
                     if (objects != null) {
                         objects.destroy();
                     }
+                    if (level.door != null) {
+                        level.door.destroy();
+                    }
+                    level.keys.forEach(function(key) {
+                        key.destroy();
+                    });
                 }
                 
                 //Spawns a physics object
@@ -245,6 +297,8 @@
                     shape.body.collides(objectCollisionGroup);
                     shape.body.kinematic = true;
                     shape.body.friction = 200.0;
+                    //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
+                    shape.tint = 0x575757;
                     
                     return shape;
                     
@@ -255,6 +309,8 @@
                     
                     processInput();
                     updateHUD();
+                    game.world.sendToBack(level.door);
+                    game.world.sendToBack(level.background);
                 }
                 
                 function processInput() {
@@ -454,6 +510,12 @@
                         console.log("SWITCHING SHAPES");
                         gameState.activeShape.body.velocity.x = 0;
                         gameState.activeShape.body.velocity.y = 0;
+                        gameState.activeShape.angularVelocity = 0;
+                        if (gameState.activeShape.shapeType == "square") {
+                            gameState.activeShape.rotation = 0;
+                            gameState.activeShape.body.angle = 0;
+                        }
+                        gameState.activeShape.tint = 0x575757;
                         gameState.activeShape.body.kinematic = true;
                         gameState.activeShape.body.fixedRotation = true;
                         gameState.activeShape = null;
@@ -466,6 +528,9 @@
                 
                 function toPrevShape() {
                     shapes.nextShape--;
+                    if (shapes.nextShape < 0) {
+                        shapes.nextShape += shapes.numShapes;
+                    }
                     switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
                 }
                 
