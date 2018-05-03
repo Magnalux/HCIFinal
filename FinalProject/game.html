@@ -32,6 +32,7 @@
                 var level;
 
                 function preload () {
+                    //load images
                     game.load.image('ground', 'img/ground.png');
                     game.load.image('spike', 'img/spike.png');
                     game.load.image('blockade', 'img/blockade.png');
@@ -72,6 +73,15 @@
                     game.load.image('doorclosed', 'img/doorred.png');
                     game.load.image('inactivekey', 'img/doorkeyred.png');
                     game.load.image('activekey', 'img/doorkeygreen.png');
+                    //load audio
+                    game.load.audio('intromusic', 'audio/Intro.mp3');
+                    game.load.audio('mainmusic', 'audio/Main.mp3');
+                    game.load.audio('finalmusic', 'audio/Final.mp3');
+                    game.load.audio('changeshape', 'audio/switchshapes.wav');
+                    game.load.audio('unlockdoorsfx', 'audio/doorunlocked.mp3');
+                    game.load.audio('switchsfx', 'audio/click.wav');
+                    game.load.audio('spikesfx', 'audio/hit.wav');
+                    //load physics
                     game.load.physics('physics', 'json/Hitboxes.json');
                 }
 
@@ -100,16 +110,16 @@
                     level.background.height = game.height;
                     level.background.fixedToCamera = true;
                     
-                    //Remove later. Used to display various art assets.
-                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 380, 480, 'doorclosed');
-                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 320, 480, 'dooropen');
-                    //var fbutton = game.add.sprite(MAP_WIDTH/2- 180, 540, 'keyoff');
-                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 140, 540, 'keyon');
-                    //var fbutton = game.add.sprite(MAP_WIDTH/2 - 240, 550, 'floorbutton');
                     //Adds moving platform
                     //var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
                     //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
                      
+                    //Add audio
+                    changeshapesfx = game.add.audio('changeshape');
+                    introsong = game.add.audio('intromusic');
+                    mainsong = game.add.audio('mainmusic');
+                    finalsong = game.add.audio('finalmusic');
+                    
                     //NOTE: phaser objects can only be in one group at a time!
                     //Initialize shapes container
                     shapes = game.add.group();
@@ -198,22 +208,28 @@
                     if (levelIdx == 0) {
                         //Load Level 0
                         //Load the terrain blocks
-                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'sharp_800', true);
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
                         platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 400, 'fullround_200', true);
                         platform = spawnObject(MAP_WIDTH / 2 - 300, MAP_HEIGHT - 275, 'fullround_100', true);
                         platform = spawnObject(MAP_WIDTH / 2 + 600, MAP_HEIGHT - 500, 'fullround_800', true);
-                        platform = spawnObject(MAP_WIDTH / 2 + 378, MAP_HEIGHT - 489, 'sharpround_600', true);
+                        platform = spawnObject(MAP_WIDTH / 2 + 378, MAP_HEIGHT - 489, 'fullround_600', true);
                         platform.body.angle = -90;
-                        var key = level.keys.create(platform.x + 100, platform.y - 80, 'inactivekey');
-                        
+                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
                         //Load the fighters
                         //Make the first fighter be the one that is active first
                         var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        
+                        mainsong.play();
+                        if (game.sound.usingWebAudio &&
+                        game.sound.context.state === 'suspended')
+                        {
+                            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+                        }
                         
                     } else {
                         //End game function
@@ -508,6 +524,7 @@
                 function switchShape(newShape) {
                     if (gameState.activeShape != null) {
                         console.log("SWITCHING SHAPES");
+                        changeshapesfx.play();
                         gameState.activeShape.body.velocity.x = 0;
                         gameState.activeShape.body.velocity.y = 0;
                         gameState.activeShape.angularVelocity = 0;
@@ -519,11 +536,14 @@
                         gameState.activeShape.body.kinematic = true;
                         gameState.activeShape.body.fixedRotation = true;
                         gameState.activeShape = null;
+                    
                     }
                     newShape = copyShape(newShape);
                     
                     gameState.activeShape = newShape;
                     game.camera.follow(gameState.activeShape);
+        
+            
                 }
                 
                 function toPrevShape() {
