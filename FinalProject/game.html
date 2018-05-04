@@ -30,6 +30,8 @@
                 var hud;
                 var startMenu;
                 var level;
+                var menu;
+                var begin;
 
                 function preload () {
                     //load images
@@ -73,6 +75,8 @@
                     game.load.image('doorclosed', 'img/doorred.png');
                     game.load.image('inactivekey', 'img/doorkeyred.png');
                     game.load.image('activekey', 'img/doorkeygreen.png');
+                    game.load.image('menu', 'img/titleScreen.png');
+                    game.load.image('beginbutton', 'img/begin.png');
                     //load audio
                     game.load.audio('intromusic', 'audio/Intro.mp3');
                     game.load.audio('mainmusic', 'audio/Main.mp3');
@@ -184,18 +188,26 @@
                     gameState.activeShape = null;
                     
                     
+                    //Initialize the level
+                    currentLevel = -1;
+                    levelComplete();
                     
                     //Initialize the Start Menu
                     startMenu = new Object();
                     //Game Logo Sprite
+                    menu = game.add.sprite(0,0,'menu');
+                    menu.fixedToCamera = true;
                     //Start Button
-                    
-                    
-                    
-                    //Initialize the level
-                    currentLevel = -1;
-                    levelComplete();
+                    begin = game.add.button(400,400,'beginbutton',closeMenu,this);
+                    begin.anchor.setTo(.5,.5);
+                    begin.fixedToCamera = true;
                 }
+                
+                function closeMenu(){
+                    menu.visible = false;
+                    begin.visible = false;
+                }
+        
                 
                 function loadLevel(levelIdx) {
                     //Delete any levels that might exist
