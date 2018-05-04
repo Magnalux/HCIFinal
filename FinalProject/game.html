@@ -374,8 +374,13 @@
                     });
                     
                     hud.activeIcon.cameraOffset.x = ICON_WIDTH * shapeArr.indexOf(gameState.activeShape)
-                    console.log(hud.activeIcon.cameraOffset.x);
                     game.world.bringToTop(hud.activeIcon);
+                    if (menu.visible) {
+                        game.world.bringToTop(menu);
+                    }
+                    if (begin.visible) {
+                        game.world.bringToTop(begin);
+                    }
                     
                 }
                 
