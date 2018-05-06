@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Phaser Project 1</title>
+        <title>GeoEscape</title>
         <link rel="stylesheet" type="text/css" href="css/main.css">
         <script src="js/phaser.min.js"></script>
     </head>
@@ -78,7 +78,7 @@
                     game.load.image('inactivekey', 'img/doorkeyred.png');
                     game.load.image('activekey', 'img/doorkeygreen.png');
                     game.load.image('menu', 'img/titleScreen.png');
-                    game.load.image('beginbutton', 'img/begin.png');
+                    game.load.spritesheet('beginbutton', 'img/beginButtonSheet.png', 265, 78);
                     //load audio
                     game.load.audio('jumpsfx', 'audio/jump.wav');
                     game.load.audio('hover', 'audio/MenuHover.wav');
@@ -202,7 +202,7 @@
                     menu = game.add.sprite(0,0,'menu');
                     menu.fixedToCamera = true;
                     //Start Button
-                    begin = game.add.button(400,400,'beginbutton',closeMenu,this);
+                    begin = game.add.button(400,400,'beginbutton',closeMenu,this,1,0);
                     begin.anchor.setTo(.5,.5);
                     begin.fixedToCamera = true;
                 }
