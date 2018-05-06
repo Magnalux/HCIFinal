@@ -22,6 +22,8 @@
                 var objects;
                 var shapeCollisionGroup;
                 var shapes;
+                var spikeCollisionGroup;
+                var spike;
                 var shapeArr;
                 var shapeStats;
                 var currentLevel;
@@ -32,6 +34,7 @@
                 var level;
                 var menu;
                 var begin;
+                var keyreset;
 
                 function preload () {
                     //load images
@@ -78,6 +81,9 @@
                     game.load.image('menu', 'img/titleScreen.png');
                     game.load.image('beginbutton', 'img/begin.png');
                     //load audio
+                    game.load.audio('jumpsfx', 'audio/jump.wav');
+                    game.load.audio('hover', 'audio/MenuHover.wav');
+                    game.load.audio('clickbegin', 'audio/BeginSFX.wav');
                     game.load.audio('intromusic', 'audio/Intro.mp3');
                     game.load.audio('mainmusic', 'audio/Main.mp3');
                     game.load.audio('finalmusic', 'audio/Final.mp3');
@@ -90,6 +96,7 @@
                 }
 
                 function create () {
+                    keyreset = false;
                     game.stage.backgroundColor = "#555555";
                     game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
                     
@@ -101,6 +108,7 @@
                     
                     objectCollisionGroup = game.physics.p2.createCollisionGroup();
                     shapeCollisionGroup = game.physics.p2.createCollisionGroup();
+                    spikeCollisionGroup = game.physics.p2.createCollisionGroup();
                     game.physics.p2.updateBoundsCollisionGroup();
                     
                     
@@ -119,6 +127,9 @@
                     //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
                      
                     //Add audio
+                    jumpsound = game.add.audio('jumpsfx');
+                    hoversfx = game.add.audio('hover');
+                    startsfx = game.add.audio('clickbegin');
                     changeshapesfx = game.add.audio('changeshape');
                     introsong = game.add.audio('intromusic');
                     mainsong = game.add.audio('mainmusic');
@@ -169,12 +180,12 @@
                     inputManager.key_D.onDown.add(dPressed, this);
                     inputManager.key_S = game.input.keyboard.addKey(Phaser.Keyboard.S);
                     inputManager.key_S.onDown.add(sPressed, this);
-                    inputManager.key_Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-                    inputManager.key_Q.onDown.add(qPressed, this);
-                    inputManager.key_E = game.input.keyboard.addKey(Phaser.Keyboard.E);
-                    inputManager.key_E.onDown.add(ePressed, this);
                     inputManager.key_SPACEBAR = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
                     inputManager.key_SPACEBAR.onDown.add(spacePressed, this);
+                    inputManager.key_LEFT = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+                    inputManager.key_LEFT.onDown.add(LeftPressed, this);
+                    inputManager.key_RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+                    inputManager.key_RIGHT.onDown.add(RightPressed, this);
                     
                     
                     
@@ -194,6 +205,7 @@
                     
                     //Initialize the Start Menu
                     startMenu = new Object();
+                    introsong.loopFull();
                     //Game Logo Sprite
                     menu = game.add.sprite(0,0,'menu');
                     menu.fixedToCamera = true;
@@ -204,8 +216,11 @@
                 }
                 
                 function closeMenu(){
+                    startsfx.play();
                     menu.visible = false;
                     begin.visible = false;
+                    introsong.stop();
+                    mainsong.loopFull();
                 }
         
                 
@@ -236,7 +251,6 @@
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
-                        mainsong.loopFull();
                         if (game.sound.usingWebAudio &&
                         game.sound.context.state === 'suspended')
                         {
@@ -323,6 +337,7 @@
                     shape.body.setCollisionGroup(shapeCollisionGroup);
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
+                    shape.body.collides(spikeCollisionGroup);
                     shape.body.kinematic = true;
                     shape.body.friction = 200.0;
                     //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
@@ -330,6 +345,13 @@
                     
                     return shape;
                     
+                }
+                
+                function spikedamage(){
+                    if (checkOverlap(spike, shape))
+                        {
+                            
+                        }
                 }
                 
                 function update() {
@@ -359,6 +381,14 @@
                     }
                     if (inputManager.key_SPACEBAR.isDown) {
                         spaceDown();
+                    }
+                    if (inputManager.key_LEFT.isDown && !keyreset) {
+                        LeftPressed();
+                        keyreset = true;
+                    }
+                    if (inputManager.key_RIGHT.isDown && !keyreset) {
+                        RightPressed();
+                        keyreset = true;
                     }
                 }
                 
@@ -665,31 +695,12 @@
                     }
                 }
                 
-                function qPressed() {
-                    console.log("Q Pressed");
-                    
-                    switch (inputManager.state) {
-                        case ("move"):
-                            toPrevShape();
-                            break;
-                    }
-                }
-                
-                function ePressed() {
-                    console.log("E Pressed");
-                    
-                    switch (inputManager.state) {
-                        case ("move"):
-                            toNextShape();
-                            break;
-                    }
-                }
-                
                 function spaceDown() {
                     console.log("Space Down");
                     
                     switch (inputManager.state) {
                         case ("move"):
+                
                             //No Function
                             break;
                     }
@@ -706,10 +717,31 @@
                             break;
                     }
                 }
+               
+                function LeftPressed() {
+                    console.log("LEFT Pressed");
+                    
+                    switch (inputManager.state) {
+                        case ("move"):
+                            toPrevShape();
+                            break;
+                    }
+                }
+                
+                function RightPressed() {
+                    console.log("RIGHT Pressed");
+                    
+                     switch (inputManager.state) {
+                        case ("move"):
+                            toNextShape();
+                            break;
+                    }
+                }
+            
                 
                 function shapeJump() {
                     console.log("Shape jumped");
-                    
+                    jumpsound.play();
                     if (gameState.activeShape != null) {
                         gameState.activeShape.body.velocity.y = -gameState.activeShape.jumpSpeed;
                     }
