@@ -7,7 +7,6 @@
         <script src="js/phaser.min.js"></script>
     </head>
     <body>
-        <!-- <h1 class="center-text">Destroy the Castle</h1> -->
         <div id="gameArea"></div>
         
         <script type="text/javascript">
@@ -118,7 +117,6 @@
                     
                     //Initialize the level
                     level = new Object();
-                    level.keys = game.add.group();
                     //Initialize background
                     level.background = game.add.sprite(0, 0, 'bg');
                     level.background.width = game.width;
@@ -139,13 +137,6 @@
                     finalsong = game.add.audio('finalmusic');
                     
                     //NOTE: phaser objects can only be in one group at a time!
-                    //Initialize shapes container
-                    shapes = game.add.group();
-                    shapes.enableBody = true;
-                    shapes.physicsBodyType = Phaser.Physics.P2JS;
-                    shapes.numShapes = 0;
-                    shapes.nextShape = 0;
-                    shapeArr = new Array();
                     
                     //Initialize shapestats
                     shapeStats = new Object();
@@ -164,11 +155,6 @@
                     shapeStats.circle.jumpSpeed = 250;
                     shapeStats.circle.maxJumpCount = 1;
                     shapeStats.circle.moveSpeed = 85;
-                    
-                    //Initialize spikes group
-                    spikes = game.add.group();
-                    spikes.enableBody = true;
-                    spikes.physicsBodyType = Phaser.Physics.P2JS;
                     
                     //Initialize keyboard inputs
                     inputManager = new Object();
@@ -234,6 +220,23 @@
                     //Delete any levels that might exist
                     deleteLevel();
                     
+                    //Initialize keys
+                    level.keys = game.add.group();
+                    
+                    //Initialize shapes container
+                    shapes = game.add.group();
+                    shapes.enableBody = true;
+                    shapes.physicsBodyType = Phaser.Physics.P2JS;
+                    shapes.numShapes = 0;
+                    shapes.nextShape = 0;
+                    shapeArr = new Array();
+                    
+                    //Initialize spikes group
+                    spikes = game.add.group();
+                    spikes.enableBody = true;
+                    spikes.physicsBodyType = Phaser.Physics.P2JS;
+                    
+                    //Initialize objects group
                     objects = game.add.group();
                     objects.enableBody = true;
                     objects.physicsBodyType = Phaser.Physics.P2JS;
@@ -250,8 +253,9 @@
                         platform = spawnObject(MAP_WIDTH / 2 + 378, MAP_HEIGHT - 489, 'fullround_600', true);
                         platform.body.angle = -90;
                         var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
-                        //Load the fighters
-                        //Make the first fighter be the one that is active first
+                        
+                        //Load the shapes
+                        //Make the first shape be the one that is active first
                         var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
@@ -287,9 +291,17 @@
                     if (level.door != null) {
                         level.door.destroy();
                     }
-                    level.keys.forEach(function(key) {
-                        key.destroy();
-                    });
+                    if (level.keys != null) {
+                        level.keys.destroy();
+                    }
+                    if (shapes != null) {
+                        shapes.destroy();
+                    }
+                    shapeArr = [];
+                    gameState.activeShape = null;
+                    if (spikes != null) {
+                        spikes.destroy();
+                    }
                 }
                 
                 //Spawns a physics object
@@ -298,6 +310,7 @@
                     block.body.setCollisionGroup(objectCollisionGroup);
                     block.body.collides(objectCollisionGroup);
                     block.body.collides(shapeCollisionGroup);
+                    block.body.collides(spikeCollisionGroup);
                     block.body.kinematic = stationary;
                     
                     return block;
@@ -350,12 +363,12 @@
                             shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Circle");
+                            shape.body.collides(spikeCollisionGroup);
                             break;
                     }
                     shape.body.setCollisionGroup(shapeCollisionGroup);
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
-                    shape.body.collides(spikeCollisionGroup);
                     shape.body.kinematic = true;
                     shape.body.friction = 200.0;
                     //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
@@ -394,14 +407,6 @@
                     }
                     if (inputManager.key_SPACEBAR.isDown) {
                         spaceDown();
-                    }
-                    if (inputManager.key_LEFT.isDown && !keyreset) {
-                        LeftPressed();
-                        keyreset = true;
-                    }
-                    if (inputManager.key_RIGHT.isDown && !keyreset) {
-                        RightPressed();
-                        keyreset = true;
                     }
                 }
                 
@@ -482,21 +487,23 @@
                     });
                     
                     //Check for falling off ledge without jumping
-                    if (gameState.activeShape.body.velocity.y > 0){
-                        if(Math.round(gameState.activeShape.prevY) == 0){
-                            if (gameState.activeShape.currJumpCount == gameState.activeShape.maxJumpCount){
-                                gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount - 1;
+                    if (gameState.activeShape != null) {
+                        if (gameState.activeShape.body.velocity.y > 0){
+                            if(Math.round(gameState.activeShape.prevY) == 0){
+                                if (gameState.activeShape.currJumpCount == gameState.activeShape.maxJumpCount){
+                                    gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount - 1;
+                                }
                             }
                         }
+
+                        //Check for jump reset
+                        if (Math.round(gameState.activeShape.body.velocity.y) == Math.round(gameState.activeShape.prevY)){
+                            gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount;
+                        }
+
+                        //Updating shape's previous y velocity
+                        gameState.activeShape.prevY = gameState.activeShape.body.velocity.y;
                     }
-                    
-                    //Check for jump reset
-                    if (Math.round(gameState.activeShape.body.velocity.y) == Math.round(gameState.activeShape.prevY)){
-                        gameState.activeShape.currJumpCount = gameState.activeShape.maxJumpCount;
-                    }
-                    
-                    //Updating shape's previous y velocity
-                    gameState.activeShape.prevY = gameState.activeShape.body.velocity.y;
                     
                 }
                 
@@ -538,6 +545,7 @@
                     
                     //Initialize the shape's type and its stats
                     newShape.shapeType = type;
+                    
                     switch (newShape.shapeType) {
                         case ("square"):
                             newShape.jumpSpeed = shapeStats.square.jumpSpeed;
@@ -547,6 +555,7 @@
                             newShape.prevY = 0;
                             newShape.body.velocity.y = 1;
                             //newShape.body.fixedRotation = true;
+                            newShape.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                             break;
                         case ("triangle"):
                             newShape.jumpSpeed = shapeStats.triangle.jumpSpeed;
@@ -557,6 +566,7 @@
                             newShape.body.velocity.y = 1;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Triangle");
+                            newShape.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
                             break;
                         case ("circle"):
                             newShape.jumpSpeed = shapeStats.circle.jumpSpeed;
@@ -567,6 +577,7 @@
                             newShape.body.velocity.y = 1;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Circle");
+                            newShape.body.collides(spikeCollisionGroup);
                             break;
                     }
                     newShape.body.setCollisionGroup(shapeCollisionGroup);
@@ -623,12 +634,12 @@
                 
                 function squareSpikeCollision(){
                     console.log("Spike has collided with square")
-                    loadLevel(0);
+                    resetLevel();
                 }
                 
                 function triangleSpikeCollision(){
                     console.log("Spike has collided with triangle")
-                    loadLevel(0);
+                    resetLevel();
                 }
                 
                 function wDown() {
