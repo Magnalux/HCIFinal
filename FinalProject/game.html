@@ -78,6 +78,9 @@
                     game.load.image('menu', 'img/titleScreen.png');
                     game.load.image('beginbutton', 'img/begin.png');
                     //load audio
+                    game.load.audio('jumpsfx', 'audio/jump.wav');
+                    game.load.audio('hover', 'audio/MenuHover.wav');
+                    game.load.audio('clickbegin', 'audio/BeginSFX.wav');
                     game.load.audio('intromusic', 'audio/Intro.mp3');
                     game.load.audio('mainmusic', 'audio/Main.mp3');
                     game.load.audio('finalmusic', 'audio/Final.mp3');
@@ -119,6 +122,9 @@
                     //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
                      
                     //Add audio
+                    jumpsound = game.add.audio('jumpsfx');
+                    hoversfx = game.add.audio('hover');
+                    startsfx = game.add.audio('clickbegin');
                     changeshapesfx = game.add.audio('changeshape');
                     introsong = game.add.audio('intromusic');
                     mainsong = game.add.audio('mainmusic');
@@ -194,6 +200,7 @@
                     
                     //Initialize the Start Menu
                     startMenu = new Object();
+                    introsong.loopFull();
                     //Game Logo Sprite
                     menu = game.add.sprite(0,0,'menu');
                     menu.fixedToCamera = true;
@@ -204,8 +211,11 @@
                 }
                 
                 function closeMenu(){
+                    startsfx.play();
                     menu.visible = false;
                     begin.visible = false;
+                    introsong.stop();
+                    mainsong.loopFull();
                 }
         
                 
@@ -236,7 +246,6 @@
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
-                        mainsong.loopFull();
                         if (game.sound.usingWebAudio &&
                         game.sound.context.state === 'suspended')
                         {
@@ -690,6 +699,7 @@
                     
                     switch (inputManager.state) {
                         case ("move"):
+                
                             //No Function
                             break;
                     }
@@ -709,7 +719,7 @@
                 
                 function shapeJump() {
                     console.log("Shape jumped");
-                    
+                    jumpsound.play();
                     if (gameState.activeShape != null) {
                         gameState.activeShape.body.velocity.y = -gameState.activeShape.jumpSpeed;
                     }
