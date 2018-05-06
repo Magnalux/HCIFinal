@@ -23,7 +23,7 @@
                 var shapeCollisionGroup;
                 var shapes;
                 var spikeCollisionGroup;
-                var spike;
+                var spikes;
                 var shapeArr;
                 var shapeStats;
                 var currentLevel;
@@ -109,6 +109,9 @@
                     objectCollisionGroup = game.physics.p2.createCollisionGroup();
                     shapeCollisionGroup = game.physics.p2.createCollisionGroup();
                     spikeCollisionGroup = game.physics.p2.createCollisionGroup();
+                    
+                    //square.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
+                   // triangle.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
                     game.physics.p2.updateBoundsCollisionGroup();
                     
                     
@@ -162,7 +165,10 @@
                     shapeStats.circle.maxJumpCount = 1;
                     shapeStats.circle.moveSpeed = 85;
                     
-                    
+                    //Initialize spikes group
+                    spikes = game.add.group();
+                    spikes.enableBody = true;
+                    spikes.physicsBodyType = Phaser.Physics.P2JS;
                     
                     //Initialize keyboard inputs
                     inputManager = new Object();
@@ -250,7 +256,7 @@
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
-                        
+                        var spike = spawnSpike(MAP_WIDTH/2 + 300, MAP_HEIGHT -320, "spike"); 
                         if (game.sound.usingWebAudio &&
                         game.sound.context.state === 'suspended')
                         {
@@ -296,7 +302,17 @@
                     
                     return block;
                 }
-                
+                //Spawns a spike
+                function spawnSpike(x, y, image){
+                    var image = image;
+                    var spike = spikes.create(x, y, image);
+                    spike.body.setCollisionGroup(spikeCollisionGroup);
+                    spike.body.collides(objectCollisionGroup);
+                    spike.body.collides(shapeCollisionGroup);
+                    //spike.body.kinematic = stationary;
+                    
+                    return spike;
+                }
                 //Spawns a shape
                 function spawnShape(xPos, yPos, type) {
                     
@@ -313,6 +329,7 @@
                             shape.currJumpCount = shapeStats.square.maxJumpCount;
                             shape.moveSpeed = shapeStats.square.moveSpeed;
                             shape.prevY = 0;
+                            shape.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                             //shape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
@@ -323,6 +340,7 @@
                             shape.prevY = 0;
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Triangle");
+                            shape.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
                             break;
                         case ("circle"):
                             shape.jumpSpeed = shapeStats.circle.jumpSpeed;
@@ -342,17 +360,12 @@
                     shape.body.friction = 200.0;
                     //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
                     shape.tint = 0x575757;
+                
                     
                     return shape;
                     
                 }
                 
-                function spikedamage(){
-                    if (checkOverlap(spike, shape))
-                        {
-                            
-                        }
-                }
                 
                 function update() {
                     updateShapes();
@@ -608,12 +621,15 @@
                 
                 
                 
+                function squareSpikeCollision(){
+                    console.log("Spike has collided with square")
+                    loadLevel(0);
+                }
                 
-                
-                
-                
-                
-                
+                function triangleSpikeCollision(){
+                    console.log("Spike has collided with triangle")
+                    loadLevel(0);
+                }
                 
                 function wDown() {
                     console.log("W Down");
