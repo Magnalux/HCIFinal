@@ -22,6 +22,8 @@
                 var objects;
                 var shapeCollisionGroup;
                 var shapes;
+                var spikeCollisionGroup;
+                var spike;
                 var shapeArr;
                 var shapeStats;
                 var currentLevel;
@@ -32,6 +34,7 @@
                 var level;
                 var menu;
                 var begin;
+                var keyreset;
 
                 function preload () {
                     //load images
@@ -93,6 +96,7 @@
                 }
 
                 function create () {
+                    keyreset = false;
                     game.stage.backgroundColor = "#555555";
                     game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
                     
@@ -104,6 +108,7 @@
                     
                     objectCollisionGroup = game.physics.p2.createCollisionGroup();
                     shapeCollisionGroup = game.physics.p2.createCollisionGroup();
+                    spikeCollisionGroup = game.physics.p2.createCollisionGroup();
                     game.physics.p2.updateBoundsCollisionGroup();
                     
                     
@@ -175,12 +180,12 @@
                     inputManager.key_D.onDown.add(dPressed, this);
                     inputManager.key_S = game.input.keyboard.addKey(Phaser.Keyboard.S);
                     inputManager.key_S.onDown.add(sPressed, this);
-                    inputManager.key_Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-                    inputManager.key_Q.onDown.add(qPressed, this);
-                    inputManager.key_E = game.input.keyboard.addKey(Phaser.Keyboard.E);
-                    inputManager.key_E.onDown.add(ePressed, this);
                     inputManager.key_SPACEBAR = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
                     inputManager.key_SPACEBAR.onDown.add(spacePressed, this);
+                    inputManager.key_LEFT = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+                    inputManager.key_LEFT.onDown.add(LeftPressed, this);
+                    inputManager.key_RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+                    inputManager.key_RIGHT.onDown.add(RightPressed, this);
                     
                     
                     
@@ -332,6 +337,7 @@
                     shape.body.setCollisionGroup(shapeCollisionGroup);
                     shape.body.collides(shapeCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
+                    shape.body.collides(spikeCollisionGroup);
                     shape.body.kinematic = true;
                     shape.body.friction = 200.0;
                     //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
@@ -339,6 +345,13 @@
                     
                     return shape;
                     
+                }
+                
+                function spikedamage(){
+                    if (checkOverlap(spike, shape))
+                        {
+                            
+                        }
                 }
                 
                 function update() {
@@ -368,6 +381,14 @@
                     }
                     if (inputManager.key_SPACEBAR.isDown) {
                         spaceDown();
+                    }
+                    if (inputManager.key_LEFT.isDown && !keyreset) {
+                        LeftPressed();
+                        keyreset = true;
+                    }
+                    if (inputManager.key_RIGHT.isDown && !keyreset) {
+                        RightPressed();
+                        keyreset = true;
                     }
                 }
                 
@@ -674,26 +695,6 @@
                     }
                 }
                 
-                function qPressed() {
-                    console.log("Q Pressed");
-                    
-                    switch (inputManager.state) {
-                        case ("move"):
-                            toPrevShape();
-                            break;
-                    }
-                }
-                
-                function ePressed() {
-                    console.log("E Pressed");
-                    
-                    switch (inputManager.state) {
-                        case ("move"):
-                            toNextShape();
-                            break;
-                    }
-                }
-                
                 function spaceDown() {
                     console.log("Space Down");
                     
@@ -716,6 +717,27 @@
                             break;
                     }
                 }
+               
+                function LeftPressed() {
+                    console.log("LEFT Pressed");
+                    
+                    switch (inputManager.state) {
+                        case ("move"):
+                            toPrevShape();
+                            break;
+                    }
+                }
+                
+                function RightPressed() {
+                    console.log("RIGHT Pressed");
+                    
+                     switch (inputManager.state) {
+                        case ("move"):
+                            toNextShape();
+                            break;
+                    }
+                }
+            
                 
                 function shapeJump() {
                     console.log("Shape jumped");
