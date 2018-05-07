@@ -14,6 +14,7 @@
             window.onload = function() {
                 var MAP_WIDTH = 4000;
                 var MAP_HEIGHT = 1000;
+                var MAX_DIST_FROM_WORLD = 500;
                 var ICON_WIDTH = 80;
                 var GRAVITY = 400;
                 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameArea', { preload: preload, create: create, update: update });
@@ -115,7 +116,7 @@
                     
                     //square.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                    // triangle.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
-                    game.physics.p2.updateBoundsCollisionGroup();
+                    //game.physics.p2.updateBoundsCollisionGroup();
                     
                     
                     
@@ -265,6 +266,12 @@
                     objects.enableBody = true;
                     objects.physicsBodyType = Phaser.Physics.P2JS;
                     
+                    if (game.sound.usingWebAudio &&
+                    game.sound.context.state === 'suspended')
+                    {
+                        game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+                    }
+                    
                     if (levelIdx == 0) {
                         //Load Level 0
                         //Load the terrain blocks
@@ -304,11 +311,6 @@
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
-                        if (game.sound.usingWebAudio &&
-                        game.sound.context.state === 'suspended')
-                        {
-                            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
-                        }
                         
                     } else if (levelIdx == 2) {
                         
@@ -650,6 +652,12 @@
 
                         //Updating shape's previous y velocity
                         gameState.activeShape.prevY = gameState.activeShape.body.velocity.y;
+                        
+                        //Check if the active shape is off the world bounds
+                        if (gameState.activeShape.x < 0 - MAX_DIST_FROM_WORLD || gameState.activeShape.x > game.world.width + MAX_DIST_FROM_WORLD
+                           || gameState.activeShape.y < 0 - MAX_DIST_FROM_WORLD || gameState.activeShape.y > game.world.height + MAX_DIST_FROM_WORLD) {
+                            resetLevel();
+                        }
                     }
                     
                 }
