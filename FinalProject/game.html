@@ -23,6 +23,9 @@
                 var shapes;
                 var spikeCollisionGroup;
                 var spikes;
+                var blockades;
+                var blockade; 
+                var floorbuttons;
                 var shapeArr;
                 var shapeStats;
                 var currentLevel;
@@ -112,6 +115,8 @@
                     objectCollisionGroup = game.physics.p2.createCollisionGroup();
                     shapeCollisionGroup = game.physics.p2.createCollisionGroup();
                     spikeCollisionGroup = game.physics.p2.createCollisionGroup();
+                    blockadeCollisionGroup = game.physics.p2.createCollisionGroup();
+                    floorbuttonCollisionGroup = game.physics.p2.createCollisionGroup();
                     
                     //square.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                    // triangle.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
@@ -260,6 +265,17 @@
                     spikes.enableBody = true;
                     spikes.physicsBodyType = Phaser.Physics.P2JS;
                     
+                    //Initialize blockades group
+                    blockades = game.add.group();
+                    blockades.enableBody = true;
+                    blockades.physicsBodyType = Phaser.Physics.P2JS;
+                    
+                    
+                    //Initialize floorbuttons group
+                    floorbuttons = game.add.group();
+                    floorbuttons.enableBody = true;
+                    floorbuttons.physicsBodyType = Phaser.Physics.P2JS;
+                    
                     //Initialize objects group
                     objects = game.add.group();
                     objects.enableBody = true;
@@ -327,10 +343,72 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 3) {
-                        
+                       
                     } else if (levelIdx == 4) {
                         
                     } else if (levelIdx == 5) {
+                        
+                        //Arrange platforms
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT-100, 'fullround_800', true);
+                        var platform1 = spawnObject(MAP_WIDTH / 2 + 400, MAP_HEIGHT-478, 'fullround_800', true);
+                        platform1.body.angle = -90;
+                        var platform2 = spawnObject(MAP_WIDTH / 2 - 400, MAP_HEIGHT-478, 'fullround_800', true);
+                        platform2.body.angle = -90;
+                        var platform3 = spawnObject(MAP_WIDTH / 2 + 290, MAP_HEIGHT-400, 'fullround_400', true);
+                        platform3.body.angle = -90;
+                        var platform4 = spawnObject(MAP_WIDTH / 2 + 212, MAP_HEIGHT-610, 'fullround_200', true);
+                        var platform5 = spawnObject(MAP_WIDTH / 2 - 290, MAP_HEIGHT-500, 'fullround_200', true);
+                        var platform6 = spawnObject(MAP_WIDTH / 2 - 290, MAP_HEIGHT-400, 'fullround_200', true);
+                        var platform7 = spawnObject(MAP_WIDTH / 2 - 290, MAP_HEIGHT-610, 'fullround_200', true);
+                        var platform8 = spawnObject(MAP_WIDTH / 2 - 50, MAP_HEIGHT-610, 'fullround_200', true);
+                        var platform9 = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT-856, 'fullround_800', true);
+                        
+                        //Arrange Items
+                        var spike = spawnSpike(platform7.x + 160, platform7.y - 40, "spike"); 
+                        spike.body.angle = 180;
+                        var spike2 = spawnSpike(platform7.x + 270, platform7.y - 40, "spike"); 
+                        spike2.body.angle = 180;
+                        var floorbutton = spawnButton(platform7.x + 9, platform7.y - 25, "floorbutton");
+                        blockade = spawnBlockade(platform6.x + 100, platform6.y - 40, "blockade");
+                        //SPIKE ROW
+                        var spike3 = spawnSpike(MAP_WIDTH / 2 - 110, platform.y - 40, "spike"); 
+                        spike3.body.angle = 180;
+                        var spike4 = spawnSpike(MAP_WIDTH / 2 - 158, platform.y - 40, "spike"); 
+                        spike4.body.angle = 180;
+                        var spike5 = spawnSpike(MAP_WIDTH / 2 - 206, platform.y - 40, "spike"); 
+                        spike5.body.angle = 180;
+                        var spike6 = spawnSpike(MAP_WIDTH / 2 - 254, platform.y - 40, "spike"); 
+                        spike6.body.angle = 180;
+                        var spike7 = spawnSpike(MAP_WIDTH / 2 - 302, platform.y - 40, "spike"); 
+                        spike7.body.angle = 180;
+                        var spike8 = spawnSpike(MAP_WIDTH / 2 - 350, platform.y - 40, "spike"); 
+                        spike8.body.angle = 180;
+                        
+                        var spike3 = spawnSpike(MAP_WIDTH / 2 - 62, platform.y - 40, "spike"); 
+                        spike3.body.angle = 180;
+                        var spike4 = spawnSpike(MAP_WIDTH / 2 - 14, platform.y - 40, "spike"); 
+                        spike4.body.angle = 180;
+                        var spike5 = spawnSpike(MAP_WIDTH / 2 + 34, platform.y - 40, "spike"); 
+                        spike5.body.angle = 180;
+                        var spike6 = spawnSpike(MAP_WIDTH / 2 + 82, platform.y - 40, "spike"); 
+                        spike6.body.angle = 180;
+                        var spike7 = spawnSpike(MAP_WIDTH / 2 + 130, platform.y - 40, "spike"); 
+                        spike7.body.angle = 180;
+                        var spike8 = spawnSpike(MAP_WIDTH / 2 + 178, platform.y - 40, "spike"); 
+                        spike8.body.angle = 180;
+                        
+                       //Set up level door and key
+                        level.door = game.add.sprite(platform4.x + (0.1 * platform4.width / 2), platform4.y + platform4.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform4.height;
+                        level.door.isOpen = false;
+                        var key = level.keys.create(platform6.x - 50, platform6.y - 44, 'inactivekey');
+                        key.isLocked = true;
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 +212, MAP_HEIGHT - 650, "square");
+                        switchShape(shape);
+                        shape = spawnShape(platform6.x + (0.1 * platform6.width / 2), platform6.y + 200, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 212, MAP_HEIGHT - 650, "triangle");
+                        
                         
                     } else if (levelIdx == 6) {
                         
@@ -378,6 +456,8 @@
                     block.body.collides(objectCollisionGroup);
                     block.body.collides(shapeCollisionGroup);
                     block.body.collides(spikeCollisionGroup);
+                    block.body.collides(blockadeCollisionGroup);
+                    block.body.collides(floorbuttonCollisionGroup);
                     block.body.kinematic = stationary;
                     
                     return block;
@@ -389,9 +469,33 @@
                     spike.body.setCollisionGroup(spikeCollisionGroup);
                     spike.body.collides(objectCollisionGroup);
                     spike.body.collides(shapeCollisionGroup);
-                    //spike.body.kinematic = stationary;
+                    spike.body.kinematic = true;
                     
                     return spike;
+                }
+                //Spawns a blockade
+                function spawnBlockade(x, y, image){
+                    var image = image;
+                    var blockade = blockades.create(x, y, image);
+                    blockade.body.kinematic = true;
+                    blockade.body.setCollisionGroup(blockadeCollisionGroup);
+                    blockade.body.collides(objectCollisionGroup);
+                    blockade.body.collides(shapeCollisionGroup);
+                    
+                    
+                    return blockade;
+                }
+                //Spawns a floorbutton
+                function spawnButton(x, y, image){
+                    var image = image;
+                    var floorbutton = floorbuttons.create(x, y, image);
+                    floorbutton.body.kinematic = true;
+                    floorbutton.body.setCollisionGroup(floorbuttonCollisionGroup);
+                    floorbutton.body.collides(shapeCollisionGroup);
+                    floorbutton.body.collides(objectCollisionGroup);
+                    
+                    
+                    return floorbutton;
                 }
                 //Spawns a shape
                 function spawnShape(xPos, yPos, type) {
@@ -411,6 +515,7 @@
                             shape.moveSpeed = shapeStats.square.moveSpeed;
                             shape.prevY = 0;
                             shape.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
+                            shape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             //shape.body.fixedRotation = true;
                             break;
                         case ("triangle"):
@@ -422,6 +527,7 @@
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Triangle");
                             shape.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
+                            shape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             break;
                         case ("circle"):
                             shape.jumpSpeed = shapeStats.circle.jumpSpeed;
@@ -432,10 +538,13 @@
                             shape.body.clearShapes();
                             shape.body.loadPolygon("physics", "Circle");
                             shape.body.collides(spikeCollisionGroup);
+                            shape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             break;
                     }
                     shape.body.setCollisionGroup(shapeCollisionGroup);
                     shape.body.collides(shapeCollisionGroup);
+                    shape.body.collides(blockadeCollisionGroup);
+                    shape.body.collides(floorbuttonCollisionGroup);
                     shape.body.collides(objectCollisionGroup);
                     shape.body.kinematic = true;
                     shape.body.friction = 200.0;
@@ -704,6 +813,7 @@
                             newShape.prevY = 0;
                             newShape.body.velocity.y = 1;
                             //newShape.body.fixedRotation = true;
+                            newShape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             newShape.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                             break;
                         case ("triangle"):
@@ -715,6 +825,7 @@
                             newShape.body.velocity.y = 1;
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Triangle");
+                            newShape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             newShape.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
                             break;
                         case ("circle"):
@@ -727,11 +838,16 @@
                             newShape.body.clearShapes();
                             newShape.body.loadPolygon("physics", "Circle");
                             newShape.body.collides(spikeCollisionGroup);
+                            newShape.body.collides(floorbuttonCollisionGroup, floorButtonHit, this);
                             break;
                     }
                     newShape.body.setCollisionGroup(shapeCollisionGroup);
                     newShape.body.collides(shapeCollisionGroup);
                     newShape.body.collides(objectCollisionGroup);
+                    newShape.body.collides(blockadeCollisionGroup);
+                    newShape.body.collides(floorButtonHit);
+
+
                     newShape.body.kinematic = false;
                     newShape.body.friction = 200.0;
                     newShape.body.angle = angle;
@@ -798,6 +914,13 @@
                     switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
                 }
                 
+                function floorButtonHit(){
+                    console.log("Floor button has been pressed");
+                    blockade.destroy();
+                    blockade = spawnBlockade(MAP_WIDTH / 2- 165, MAP_HEIGHT / 2 + 100, "blockade");
+                    blockade.body.angle = 90;
+
+                }
                 
                 
                 function squareSpikeCollision(){
