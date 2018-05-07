@@ -209,6 +209,7 @@
                     playbutton.anchor.setTo(.5,.5);
                     playbutton.fixedToCamera = true;
                     playbutton.onOverSound = hoversfx;
+                    playbutton.visible = false; 
                     //Initialize the Start Menu
                     startMenu = new Object();
                     introsong.loopFull();
@@ -226,6 +227,7 @@
                     startsfx.play();
                     menu.visible = false;
                     begin.visible = false;
+                    playbutton.visible = true;
                 }
                 
                 function closeInstructions(){
