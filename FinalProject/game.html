@@ -484,8 +484,8 @@
                         if (key.isLocked) {
                             var keyCenterX = key.x + (key.width / 2);
                             var keyCenterY = key.y + (key.height / 2);
-                            var minX = gameState.activeShape.x;
-                            var minY = gameState.activeShape.y;
+                            var minX = gameState.activeShape.x - (gameState.activeShape.width / 2);
+                            var minY = gameState.activeShape.y - (gameState.activeShape.height / 2);
                             var maxX = minX + gameState.activeShape.width;
                             var maxY = minY + gameState.activeShape.height;
                             if (keyCenterX >= minX && keyCenterX <= maxX && keyCenterY >= minY && keyCenterY <= maxY) {
