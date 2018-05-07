@@ -189,6 +189,8 @@
                     inputManager.key_LEFT.onDown.add(LeftPressed, this);
                     inputManager.key_RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
                     inputManager.key_RIGHT.onDown.add(RightPressed, this);
+                    inputManager.key_P = game.input.keyboard.addKey(Phaser.Keyboard.P);
+                    inputManager.key_P.onDown.add(pPressed, this);
                     
                     
                     
@@ -460,6 +462,9 @@
                     if (level.keys != null) {
                         level.keys.destroy();
                     }
+                    if(blockade != null){
+                        blockade.destroy();
+                    }
                     if (shapes != null) {
                         shapes.destroy();
                     }
@@ -610,6 +615,9 @@
                     }
                     if (inputManager.key_SPACEBAR.isDown) {
                         spaceDown();
+                    }
+                    if (inputManager.key_P.isDown) {
+                        pPressed();
                     }
                 }
                 
@@ -957,6 +965,10 @@
                 
                 function triangleSpikeCollision(){
                     console.log("Spike has collided with triangle")
+                    resetLevel();
+                }
+                
+                function pPressed() {
                     resetLevel();
                 }
                 
