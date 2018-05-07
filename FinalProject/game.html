@@ -132,6 +132,7 @@
                     //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
                      
                     //Add audio
+                    doorunlocksfx = game.add.audio('unlockdoorsfx');
                     jumpsound = game.add.audio('jumpsfx');
                     hoversfx = game.add.audio('hover');
                     startsfx = game.add.audio('clickbegin');
@@ -207,7 +208,7 @@
                     playbutton = game.add.button(400,500,'playButton',closeInstructions,this,1,0);
                     playbutton.anchor.setTo(.5,.5);
                     playbutton.fixedToCamera = true;
-                    
+                    playbutton.onOverSound = hoversfx;
                     //Initialize the Start Menu
                     startMenu = new Object();
                     introsong.loopFull();
@@ -218,6 +219,7 @@
                     begin = game.add.button(400,400,'beginbutton',closeMenu,this,1,0);
                     begin.anchor.setTo(.5,.5);
                     begin.fixedToCamera = true;
+                    begin.onOverSound = hoversfx;
                 }
                 
                 function closeMenu(){
@@ -283,11 +285,7 @@
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         var spike = spawnSpike(MAP_WIDTH/2 + 300, MAP_HEIGHT -320, "spike"); 
-                        if (game.sound.usingWebAudio &&
-                        game.sound.context.state === 'suspended')
-                        {
-                            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
-                        }
+                       
                         
                     } else if (levelIdx == 1) {
                         
@@ -304,6 +302,11 @@
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        if (game.sound.usingWebAudio &&
+                        game.sound.context.state === 'suspended')
+                        {
+                            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+                        }
                         
                     } else if (levelIdx == 2) {
                         
@@ -518,6 +521,7 @@
                                 var oldX = level.door.x;
                                 var oldY = level.door.y;
                                 level.door.destroy();
+                                doorunlocksfx.play();
                                 level.door = game.add.sprite(oldX, oldY, 'dooropen');
                                 level.door.isOpen = true;
                             }
