@@ -198,7 +198,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 0;
+                    currentLevel = 1;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -770,28 +770,28 @@
                 }
                 
                 function switchShape(newShape) {
-                    if (gameState.activeShape != null) {
-                        console.log("SWITCHING SHAPES");
-                        changeshapesfx.play();
-                        gameState.activeShape.body.velocity.x = 0;
-                        gameState.activeShape.body.velocity.y = 0;
-                        gameState.activeShape.angularVelocity = 0;
-                        if (gameState.activeShape.shapeType == "square") {
-                            gameState.activeShape.rotation = 0;
-                            gameState.activeShape.body.angle = 0;
+                    if (gameState.activeShape != newShape) {
+                        if (gameState.activeShape != null) {
+                            console.log("SWITCHING SHAPES");
+                            changeshapesfx.play();
+                            gameState.activeShape.body.velocity.x = 0;
+                            gameState.activeShape.body.velocity.y = 0;
+                            gameState.activeShape.angularVelocity = 0;
+                            if (gameState.activeShape.shapeType == "square") {
+                                gameState.activeShape.rotation = 0;
+                                gameState.activeShape.body.angle = 0;
+                            }
+                            gameState.activeShape.tint = 0x575757;
+                            gameState.activeShape.body.kinematic = true;
+                            gameState.activeShape.body.fixedRotation = true;
+                            gameState.activeShape = null;
+
                         }
-                        gameState.activeShape.tint = 0x575757;
-                        gameState.activeShape.body.kinematic = true;
-                        gameState.activeShape.body.fixedRotation = true;
-                        gameState.activeShape = null;
-                    
+                        newShape = copyShape(newShape);
+
+                        gameState.activeShape = newShape;
+                        game.camera.follow(gameState.activeShape);
                     }
-                    newShape = copyShape(newShape);
-                    
-                    gameState.activeShape = newShape;
-                    game.camera.follow(gameState.activeShape);
-        
-            
                 }
                 
                 function toPrevShape() {
