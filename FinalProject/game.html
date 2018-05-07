@@ -34,6 +34,8 @@
                 var menu;
                 var begin;
                 var keyreset;
+                var instructions;
+                var playbutton;
 
                 function preload () {
                     //load images
@@ -78,7 +80,9 @@
                     game.load.image('inactivekey', 'img/doorkeyred.png');
                     game.load.image('activekey', 'img/doorkeygreen.png');
                     game.load.image('menu', 'img/titleScreen.png');
+                    game.load.image('instructions', 'img/controlsinstructions.png');
                     game.load.spritesheet('beginbutton', 'img/beginButtonSheet.png', 265, 78);
+                    game.load.spritesheet('playButton', 'img/playButtonSheet.png', 265, 78);
                     //load audio
                     game.load.audio('jumpsfx', 'audio/jump.wav');
                     game.load.audio('hover', 'audio/MenuHover.wav');
@@ -195,6 +199,15 @@
                     currentLevel = -1;
                     levelComplete();
                     
+                    //Initialize the instructions
+                    //instructions
+                    instructions = game.add.sprite(0,0,'instructions');
+                    instructions.fixedToCamera = true;
+                    //Start Button
+                    playbutton = game.add.button(400,500,'playButton',closeInstructions,this,1,0);
+                    playbutton.anchor.setTo(.5,.5);
+                    playbutton.fixedToCamera = true;
+                    
                     //Initialize the Start Menu
                     startMenu = new Object();
                     introsong.loopFull();
@@ -211,6 +224,12 @@
                     startsfx.play();
                     menu.visible = false;
                     begin.visible = false;
+                }
+                
+                function closeInstructions(){
+                    startsfx.play();
+                    instructions.visible = false;
+                    playbutton.visible = false;
                     introsong.stop();
                     mainsong.loopFull();
                 }
