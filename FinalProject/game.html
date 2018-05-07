@@ -196,7 +196,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = -1;
+                    currentLevel = 0;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -247,6 +247,7 @@
                     shapes.enableBody = true;
                     shapes.physicsBodyType = Phaser.Physics.P2JS;
                     shapes.numShapes = 0;
+                    shapes.numNotFinished = 0;
                     shapes.nextShape = 0;
                     shapeArr = new Array();
                     
@@ -266,12 +267,14 @@
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
                         platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 400, 'fullround_200', true);
                         platform = spawnObject(MAP_WIDTH / 2 - 300, MAP_HEIGHT - 275, 'fullround_100', true);
                         platform = spawnObject(MAP_WIDTH / 2 + 600, MAP_HEIGHT - 500, 'fullround_800', true);
                         platform = spawnObject(MAP_WIDTH / 2 + 378, MAP_HEIGHT - 489, 'fullround_600', true);
                         platform.body.angle = -90;
                         var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        key.isLocked = true;
                         
                         //Load the shapes
                         //Make the first shape be the one that is active first
@@ -285,6 +288,46 @@
                         {
                             game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
                         }
+                        
+                    } else if (levelIdx == 1) {
+                        
+                        //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        key.isLocked = true;
+                        
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        
+                    } else if (levelIdx == 2) {
+                        
+                        //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        key.isLocked = true;
+                        
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        
+                    } else if (levelIdx == 3) {
+                        
+                    } else if (levelIdx == 4) {
+                        
+                    } else if (levelIdx == 5) {
+                        
+                    } else if (levelIdx == 6) {
                         
                     } else {
                         //End game function
@@ -353,6 +396,7 @@
                     var shape = shapes.create(xPos, yPos, tileSheet);
                     shapeArr.push(shape);
                     shapes.numShapes++;
+                    shapes.numNotFinished++;
                     shape.shapeType = type;
                     switch (shape.shapeType) {
                         case ("square"):
@@ -392,6 +436,7 @@
                     shape.body.friction = 200.0;
                     //Set the tint of the sprite to fit an inactive shape since shapes start out inactive
                     shape.tint = 0x575757;
+                    shape.throughdoor = false;
                 
                     
                     return shape;
@@ -403,6 +448,10 @@
                     updateShapes();
                     
                     processInput();
+                    
+                    updateKeys();
+                    updateDoor();
+                    
                     updateHUD();
                     game.world.sendToBack(level.door);
                     game.world.sendToBack(level.background);
@@ -429,6 +478,71 @@
                     }
                 }
                 
+                function updateKeys() {
+                    var keyToUnlock = null;
+                    level.keys.forEach(function(key) {
+                        if (key.isLocked) {
+                            var keyCenterX = key.x + (key.width / 2);
+                            var keyCenterY = key.y + (key.height / 2);
+                            var minX = gameState.activeShape.x;
+                            var minY = gameState.activeShape.y;
+                            var maxX = minX + gameState.activeShape.width;
+                            var maxY = minY + gameState.activeShape.height;
+                            if (keyCenterX >= minX && keyCenterX <= maxX && keyCenterY >= minY && keyCenterY <= maxY) {
+                                keyToUnlock = key;
+                            }
+                        }
+                    });
+                    
+                    if (keyToUnlock != null) {
+                        var oldX = keyToUnlock.x;
+                        var oldY = keyToUnlock.y;
+                        level.keys.remove(keyToUnlock);
+                        keyToUnlock.destroy();
+                        keyToUnlock = level.keys.create(oldX, oldY, 'activekey');
+                        keyToUnlock.isLocked = false;
+                    }
+                    
+                }
+                
+                function updateDoor() {
+                    if (level.door != null) {
+                        if (!level.door.isOpen) {
+                            var allKeysActive = true;
+                            level.keys.forEach(function(key) {
+                                if (key.isLocked) {
+                                    allKeysActive = false;
+                                }
+                            });
+                            if (allKeysActive) {
+                                var oldX = level.door.x;
+                                var oldY = level.door.y;
+                                level.door.destroy();
+                                level.door = game.add.sprite(oldX, oldY, 'dooropen');
+                                level.door.isOpen = true;
+                            }
+                        } else if (gameState.activeShape != null) {
+                            var shapeCenterX = gameState.activeShape.x;
+                            var shapeCenterY = gameState.activeShape.y;
+                            var minX = level.door.x;
+                            var minY = level.door.y;
+                            var maxX = minX + level.door.width;
+                            var maxY = minY + level.door.height;
+                            if (shapeCenterX >= minX && shapeCenterX <= maxX && shapeCenterY >= minY && shapeCenterY <= maxY) {
+                                if (shapes.numNotFinished > 1) {
+                                    var oldShape = gameState.activeShape;
+                                    toNextShape();
+                                    oldShape.destroy();
+                                    oldShape.throughdoor = true;
+                                    shapes.numNotFinished--;
+                                } else {
+                                    levelComplete();
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 function updateHUD() {
                     hud.iconBackgrounds.forEach(function(icon) {
                         game.world.bringToTop(icon);
@@ -442,6 +556,14 @@
                     
                     hud.activeIcon.cameraOffset.x = ICON_WIDTH * shapeArr.indexOf(gameState.activeShape)
                     game.world.bringToTop(hud.activeIcon);
+                    
+                    //Bring the Menus to the top of the screen
+                    if (instructions.visible) {
+                        game.world.bringToTop(instructions);
+                    }
+                    if (playbutton.visible) {
+                        game.world.bringToTop(playbutton);
+                    }
                     if (menu.visible) {
                         game.world.bringToTop(menu);
                     }
@@ -555,6 +677,7 @@
                     var type = shape.shapeType;
                     var tilesheet = getShapeSprite(type);
                     var angle = shape.body.angle;
+                    var throughdoor = shape.throughdoor;
                     
                     var newShape;
                     shapes.remove(shape);
@@ -564,6 +687,7 @@
                     
                     //Initialize the shape's type and its stats
                     newShape.shapeType = type;
+                    newShape.throughdoor = throughdoor;
                     
                     switch (newShape.shapeType) {
                         case ("square"):
@@ -641,11 +765,30 @@
                     if (shapes.nextShape < 0) {
                         shapes.nextShape += shapes.numShapes;
                     }
-                    switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
+                    
+                    var nextShape = shapeArr[shapes.nextShape % shapes.numShapes];
+                    
+                    while (nextShape.throughdoor) {
+                        shapes.nextShape--;
+                        if (shapes.nextShape < 0) {
+                            shapes.nextShape += shapes.numShapes;
+                        }
+                        nextShape = shapeArr[shapes.nextShape % shapes.numShapes];
+                    }
+                    
+                    switchShape(nextShape);
                 }
                 
                 function toNextShape() {
                     shapes.nextShape++;
+                    
+                    var nextShape = shapeArr[shapes.nextShape % shapes.numShapes];
+                    
+                    while (nextShape.throughdoor) {
+                        shapes.nextShape++;
+                        nextShape = shapeArr[shapes.nextShape % shapes.numShapes];
+                    }
+                    
                     switchShape(shapeArr[shapes.nextShape % shapes.numShapes]);
                 }
                 
