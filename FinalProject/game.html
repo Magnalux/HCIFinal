@@ -203,7 +203,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 1;
+                    currentLevel = 4;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -314,6 +314,25 @@
                         
                     } else if (levelIdx == 1) {
                         
+                    } else if (levelIdx == 2) {
+                        
+                        //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        key.isLocked = true;
+                        
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        
+                    } else if (levelIdx == 3) {
+                       
+                    } else if (levelIdx == 4) {
                         //Load the terrain blocks
                         //Right Side
                         var platform = spawnObject(MAP_WIDTH / 2 - 14, MAP_HEIGHT - 210, 'fullround_600', true);
@@ -347,26 +366,6 @@
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 100, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 180, MAP_HEIGHT - 320, "triangle");
-                        
-                    } else if (levelIdx == 2) {
-                        
-                        //Load the terrain blocks
-                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
-                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
-                        level.door.y -= level.door.height + platform.height;
-                        level.door.isOpen = false;
-                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
-                        key.isLocked = true;
-                        
-                        //Load the shapes
-                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
-                        switchShape(shape);
-                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
-                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
-                        
-                    } else if (levelIdx == 3) {
-                       
-                    } else if (levelIdx == 4) {
                         
                     } else if (levelIdx == 5) {
                         
