@@ -14,6 +14,7 @@
             window.onload = function() {
                 var MAP_WIDTH = 4000;
                 var MAP_HEIGHT = 1000;
+                var MAX_DIST_FROM_WORLD = 500;
                 var ICON_WIDTH = 80;
                 var GRAVITY = 400;
                 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameArea', { preload: preload, create: create, update: update });
@@ -120,7 +121,7 @@
                     
                     //square.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
                    // triangle.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
-                    game.physics.p2.updateBoundsCollisionGroup();
+                    //game.physics.p2.updateBoundsCollisionGroup();
                     
                     
                     
@@ -202,7 +203,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 0;
+                    currentLevel = 1;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -281,6 +282,12 @@
                     objects.enableBody = true;
                     objects.physicsBodyType = Phaser.Physics.P2JS;
                     
+                    if (game.sound.usingWebAudio &&
+                    game.sound.context.state === 'suspended')
+                    {
+                        game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+                    }
+                    
                     if (levelIdx == 0) {
                         //Load Level 0
                         //Load the terrain blocks
@@ -308,23 +315,38 @@
                     } else if (levelIdx == 1) {
                         
                         //Load the terrain blocks
-                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        //Right Side
+                        var platform = spawnObject(MAP_WIDTH / 2 - 14, MAP_HEIGHT - 210, 'fullround_600', true);
+                        platform = spawnObject(MAP_WIDTH / 2 + 478, MAP_HEIGHT - 488, 'fullround_600', true);
+                        platform.body.angle = -90;
+                        platform = spawnObject(MAP_WIDTH / 2 + 296, MAP_HEIGHT - 288, 'fullround_200', true);
+                        platform.body.angle = -90;
+                        platform = spawnObject(MAP_WIDTH / 2 + 458, MAP_HEIGHT - 766, 'fullround_400', true);
+                        var key = level.keys.create(platform.x - (0.2 * platform.width / 2), platform.y + 55, 'inactivekey');
+                        key.isLocked = true;
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
                         level.door.isOpen = false;
-                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        
+                        //Left Side
+                        platform = spawnObject(MAP_WIDTH / 2 - 322, MAP_HEIGHT - 288, 'fullround_200', true);
+                        platform.body.angle = -90;
+                        platform = spawnObject(MAP_WIDTH / 2 - 522, MAP_HEIGHT - 366, 'fullround_400', true);
+                        platform = spawnObject(MAP_WIDTH / 2 - 122, MAP_HEIGHT - 410, 'fullround_200', true);
+                        key = level.keys.create(platform.x - (0.5 * platform.width / 2), platform.y - 105, 'inactivekey');
+                        key.isLocked = true;
+                        platform = spawnObject(MAP_WIDTH / 2 - 422, MAP_HEIGHT - 566, 'fullround_200', true);
+                        platform = spawnObject(MAP_WIDTH / 2 - 222, MAP_HEIGHT - 588, 'fullround_400', true);
+                        platform.body.angle = -90;
+                        platform = spawnObject(MAP_WIDTH / 2 - 122, MAP_HEIGHT - 766, 'fullround_200', true);
+                        key = level.keys.create(platform.x + (0.5 * platform.width / 2), platform.y - 55, 'inactivekey');
                         key.isLocked = true;
                         
                         //Load the shapes
                         var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
                         switchShape(shape);
-                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
-                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
-                        if (game.sound.usingWebAudio &&
-                        game.sound.context.state === 'suspended')
-                        {
-                            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
-                        }
+                        shape = spawnShape(MAP_WIDTH/2 + 100, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 180, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 2) {
                         
@@ -759,6 +781,12 @@
 
                         //Updating shape's previous y velocity
                         gameState.activeShape.prevY = gameState.activeShape.body.velocity.y;
+                        
+                        //Check if the active shape is off the world bounds
+                        if (gameState.activeShape.x < 0 - MAX_DIST_FROM_WORLD || gameState.activeShape.x > game.world.width + MAX_DIST_FROM_WORLD
+                           || gameState.activeShape.y < 0 - MAX_DIST_FROM_WORLD || gameState.activeShape.y > game.world.height + MAX_DIST_FROM_WORLD) {
+                            resetLevel();
+                        }
                     }
                     
                 }
@@ -858,28 +886,28 @@
                 }
                 
                 function switchShape(newShape) {
-                    if (gameState.activeShape != null) {
-                        console.log("SWITCHING SHAPES");
-                        changeshapesfx.play();
-                        gameState.activeShape.body.velocity.x = 0;
-                        gameState.activeShape.body.velocity.y = 0;
-                        gameState.activeShape.angularVelocity = 0;
-                        if (gameState.activeShape.shapeType == "square") {
-                            gameState.activeShape.rotation = 0;
-                            gameState.activeShape.body.angle = 0;
+                    if (gameState.activeShape != newShape) {
+                        if (gameState.activeShape != null) {
+                            console.log("SWITCHING SHAPES");
+                            changeshapesfx.play();
+                            gameState.activeShape.body.velocity.x = 0;
+                            gameState.activeShape.body.velocity.y = 0;
+                            gameState.activeShape.angularVelocity = 0;
+                            if (gameState.activeShape.shapeType == "square") {
+                                gameState.activeShape.rotation = 0;
+                                gameState.activeShape.body.angle = 0;
+                            }
+                            gameState.activeShape.tint = 0x575757;
+                            gameState.activeShape.body.kinematic = true;
+                            gameState.activeShape.body.fixedRotation = true;
+                            gameState.activeShape = null;
+
                         }
-                        gameState.activeShape.tint = 0x575757;
-                        gameState.activeShape.body.kinematic = true;
-                        gameState.activeShape.body.fixedRotation = true;
-                        gameState.activeShape = null;
-                    
+                        newShape = copyShape(newShape);
+
+                        gameState.activeShape = newShape;
+                        game.camera.follow(gameState.activeShape);
                     }
-                    newShape = copyShape(newShape);
-                    
-                    gameState.activeShape = newShape;
-                    game.camera.follow(gameState.activeShape);
-        
-            
                 }
                 
                 function toPrevShape() {
