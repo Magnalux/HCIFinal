@@ -40,6 +40,8 @@
                 var keyreset;
                 var instructions;
                 var playbutton;
+                var mainmenuButton;
+                var youWinScreen;
 
                 function preload () {
                     //load images
@@ -92,6 +94,8 @@
                     game.load.image('instructions', 'img/controlsinstructions.png');
                     game.load.spritesheet('beginbutton', 'img/beginButtonSheet.png', 265, 78);
                     game.load.spritesheet('playButton', 'img/playButtonSheet.png', 265, 78);
+                    game.load.spritesheet('menuButton', 'img/menuButtonSheet.png', 265, 78);
+                    game.load.image('youWin', 'img/youWin.png');
                     //load audio
                     game.load.audio('jumpsfx', 'audio/jump.wav');
                     game.load.audio('hover', 'audio/MenuHover.wav');
@@ -490,6 +494,24 @@
                     
                     //Reset the HUD to match the new shapes
                     resetHUD();
+                }
+                
+                function endGame(){
+                    youWinScreen = game.add.sprite(0,0,'youWin');
+                    youWinScreen.fixedToCamera = true;
+                    
+                    mainmenuButton = game.add.button(400,500,'menuButton',closeEndGame,this,1,0);
+                    mainmenuButton.anchor.setTo(.5,.5);
+                    mainmenuButton.fixedToCamera = true;
+                    mainmenuButton.onOverSound = hoversfx;
+                }
+                
+                function closeEndGame(){
+                    youWinScreen.visibility = false;
+                    mainmenuButton.visibility = false;
+                    startsfx.play();
+                    loadLevel(1);
+                    
                 }
                 
                 function levelComplete() {
