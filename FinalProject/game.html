@@ -61,6 +61,11 @@
                     game.load.image('rectangle', 'img/Rectangle.png');
                     game.load.image('smallsquare', 'img/SmallSquare.png');
                     game.load.image('bg', 'img/bg.png');
+                    game.load.image('bg1', 'img/bg1.png');
+                    game.load.image('bg2', 'img/bg2.png');
+                    game.load.image('bg3', 'img/bg3.png');
+                    game.load.image('bg4', 'img/bg4.png');
+                    game.load.image('bg5', 'img/bg5.png');
                     game.load.image('activeiconoverlay', 'img/IconOverlay.png');
                     game.load.image('iconbackground', 'img/IconBackground.png');
                     game.load.image('iconborder', 'img/IconBorder.png');
@@ -119,11 +124,6 @@
                     blockadeCollisionGroup = game.physics.p2.createCollisionGroup();
                     floorbuttonCollisionGroup = game.physics.p2.createCollisionGroup();
                     
-                    //square.body.collides(spikeCollisionGroup, squareSpikeCollision, this);
-                   // triangle.body.collides(spikeCollisionGroup, triangleSpikeCollision, this);
-                    //game.physics.p2.updateBoundsCollisionGroup();
-                    
-                    
                     
                     //Initialize the level
                     level = new Object();
@@ -132,11 +132,7 @@
                     level.background.width = game.width;
                     level.background.height = game.height;
                     level.background.fixedToCamera = true;
-                    
-                    //Adds moving platform
-                    //var movingplatform = game.add.sprite(MAP_WIDTH/2, 400, 'trapplatform');
-                    //game.add.tween(movingplatform.position).to( {y: 500}, 2000, Phaser.Easing.Linear.None, true, 0, 20, true).loop(true);
-                     
+                 
                     //Add audio
                     doorunlocksfx = game.add.audio('unlockdoorsfx');
                     jumpsound = game.add.audio('jumpsfx');
@@ -315,6 +311,8 @@
                        
                         
                     } else if (levelIdx == 1) {
+                        var background = game.add.sprite(0, 0, 'bg1');
+                        background.fixedToCamera = true;
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
@@ -323,7 +321,8 @@
                         var platform2 = spawnObject(MAP_WIDTH / 2 - 200, MAP_HEIGHT - 350, 'fullround_200', true);
                         
                     } else if (levelIdx == 2) {
-                        
+                        var background = game.add.sprite(0, 0, 'bg2');
+                        background.fixedToCamera = true;
                         //Load the terrain blocks
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
@@ -339,6 +338,8 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 3) {
+                        var background = game.add.sprite(0, 0, 'bg3');
+                        background.fixedToCamera = true;
                                                //Load the terrain blocks
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2) + 100, platform.y + platform.height / 2, 'doorclosed');
@@ -384,6 +385,8 @@
                         spike8.body.angle = 180;
                         spike9.body.angle = 180;
                     } else if (levelIdx == 4) {
+                        var background = game.add.sprite(0, 0, 'bg4');
+                        background.fixedToCamera = true;
                         //Load the terrain blocks
                         //Right Side
                         var platform = spawnObject(MAP_WIDTH / 2 - 14, MAP_HEIGHT - 210, 'fullround_600', true);
@@ -419,6 +422,9 @@
                         shape = spawnShape(MAP_WIDTH/2 + 180, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 5) {
+                        var background = game.add.sprite(0, 0, 'bg5');
+                        background.fixedToCamera = true;
+                        game.world.sendToBack(background);
                         
                         //Arrange platforms
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT-100, 'fullround_800', true);
