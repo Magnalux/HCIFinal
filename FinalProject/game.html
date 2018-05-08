@@ -315,6 +315,12 @@
                        
                         
                     } else if (levelIdx == 1) {
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        //platforms
+                        var platform2 = spawnObject(MAP_WIDTH / 2 - 200, MAP_HEIGHT - 350, 'fullround_200', true);
                         
                     } else if (levelIdx == 2) {
                         
@@ -333,7 +339,50 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 3) {
-                       
+                                               //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2) + 100, platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        var platform1 = spawnObject(MAP_WIDTH / 2 - 150, MAP_HEIGHT - 500, 'fullround_200', true);
+                        var platform2 = spawnObject(MAP_WIDTH / 2 - 130, MAP_HEIGHT - 490, 'fullround_600', true);
+                        platform2.body.angle = -90;
+                        var platform3 = spawnObject(MAP_WIDTH / 2 - 350, MAP_HEIGHT - 350, 'fullround_200', true);
+                        var platform4 = spawnObject(MAP_WIDTH / 2 - 172, MAP_HEIGHT - 620, 'fullround_200', true);
+                        platform4.body.angle = -90;
+                        //var platform5 = spawnObject(MAP_WIDTH / 2 + 200, MAP_HEIGHT - 300, 'fullround_400', true);
+                        
+                        
+                        var key = level.keys.create(platform1.x - 50, platform.y - 48, 'inactivekey');
+                        key.isLocked = true;
+                        
+                        //Load the shapes
+                        //Make the first shape be the one that is active first
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2 + 50, MAP_HEIGHT - 250, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 0, MAP_HEIGHT - 250, "triangle");
+                        var spike = spawnSpike(MAP_WIDTH/2 - 230, MAP_HEIGHT - 350, "spike"); 
+                        spike.body.angle = -90;
+                        var spike10 = spawnSpike(MAP_WIDTH/2 - 210, MAP_HEIGHT - 600, "spike");
+                        spike10.body.angle = 90;
+                        var spike2 = spawnSpike(MAP_WIDTH/2 - 180, MAP_HEIGHT - 460, "spike");
+                        var spike3 = spawnSpike(MAP_WIDTH / 2 + 100, MAP_HEIGHT - 250, "spike");
+                        var spike4 = spawnSpike(MAP_WIDTH / 2 + 125, MAP_HEIGHT - 250, "spike");
+                        var spike5 = spawnSpike(MAP_WIDTH / 2 + 175, MAP_HEIGHT - 250, "spike");
+                        var spike6 = spawnSpike(MAP_WIDTH / 2 + 200, MAP_HEIGHT - 250, "spike");
+                        var spike7 = spawnSpike(MAP_WIDTH / 2 + 225, MAP_HEIGHT - 250, "spike");
+                        var spike8 = spawnSpike(MAP_WIDTH / 2 + 250, MAP_HEIGHT - 250, "spike");
+                        var spike9 = spawnSpike(MAP_WIDTH / 2 + 150, MAP_HEIGHT - 250, "spike");
+                        
+
+                        spike3.body.angle = 180;
+                        spike4.body.angle = 180;
+                        spike5.body.angle = 180;
+                        spike6.body.angle = 180;
+                        spike7.body.angle = 180;
+                        spike8.body.angle = 180;
+                        spike9.body.angle = 180;
                     } else if (levelIdx == 4) {
                         //Load the terrain blocks
                         //Right Side
