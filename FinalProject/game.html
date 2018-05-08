@@ -486,6 +486,21 @@
                         
                         
                     } else if (levelIdx == 6) {
+                        level.background.loadTexture('bg1');
+                        //Load the terrain blocks
+                        var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
+                        level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
+                        level.door.y -= level.door.height + platform.height;
+                        level.door.isOpen = false;
+                        var key = level.keys.create(platform.x + 100, platform.y - 47, 'inactivekey');
+                        key.isLocked = true;
+                        
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 50, MAP_HEIGHT - 320, "triangle");
+                        
                         endGame();
                     } else {
                         //End game function
@@ -506,10 +521,10 @@
                 }
                 
                 function closeEndGame(){
-                    youWinScreen.visibility = false;
-                    mainmenuButton.visibility = false;
+                    youWinScreen.visible = false;
+                    mainmenuButton.visible = false;
                     startsfx.play();
-                    loadLevel(1);
+                    create();
                     
                 }
                 
