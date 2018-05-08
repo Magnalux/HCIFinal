@@ -205,7 +205,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 1;
+                    currentLevel = 0;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -318,9 +318,20 @@
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
+                        
                         level.door.isOpen = false;
+                        var key = level.keys.create(platform.x -260, platform.y - 185, 'inactivekey');
+                        key.isLocked = true;
+                        
                         //platforms
                         var platform2 = spawnObject(MAP_WIDTH / 2 - 200, MAP_HEIGHT - 350, 'fullround_200', true);
+                        
+                        //Load the shapes
+                        var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
+                        switchShape(shape);
+                        shape = spawnShape(MAP_WIDTH/2, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 50, MAP_HEIGHT - 320, "triangle");
+                       
                         
                     } else if (levelIdx == 2) {
                         level.background.loadTexture('bg1');
