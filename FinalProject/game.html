@@ -311,7 +311,6 @@
                         switchShape(shape);
                         shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
-                        var spike = spawnSpike(MAP_WIDTH/2 + 300, MAP_HEIGHT -320, "spike"); 
                        
                         
                     } else if (levelIdx == 1) {
@@ -330,14 +329,14 @@
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
                         level.door.isOpen = false;
-                        var key = level.keys.create(platform.x + 100, platform.y - 55, 'inactivekey');
+                        var key = level.keys.create(platform.x + 100, platform.y - 47, 'inactivekey');
                         key.isLocked = true;
                         
                         //Load the shapes
                         var shape = spawnShape(MAP_WIDTH/2 - 40, MAP_HEIGHT - 320, "square");
                         switchShape(shape);
-                        shape = spawnShape(MAP_WIDTH/2 + 200, MAP_HEIGHT - 320, "circle");
-                        shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
+                        shape = spawnShape(MAP_WIDTH/2, MAP_HEIGHT - 320, "circle");
+                        shape = spawnShape(MAP_WIDTH/2 + 50, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 3) {
                         level.background.loadTexture('bg2');
@@ -487,7 +486,7 @@
                         
                         
                     } else if (levelIdx == 6) {
-                        
+                        endGame();
                     } else {
                         //End game function
                     }
