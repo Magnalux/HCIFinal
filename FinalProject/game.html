@@ -205,7 +205,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 0;
+                    currentLevel = -1;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -290,7 +290,7 @@
                         game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
                     }
                     
-                    if (levelIdx == 0) {
+                    if (levelIdx == 1) {
                         //Load Level 0
                         //Load the terrain blocks
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
@@ -313,7 +313,7 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                        
                         
-                    } else if (levelIdx == 1) {
+                    } else if (levelIdx == 0) {
                         level.background.loadTexture('bg');
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
