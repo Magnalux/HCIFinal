@@ -201,7 +201,7 @@
                     
                     
                     //Initialize the level
-                    currentLevel = 4;
+                    currentLevel = 1;
                     levelComplete();
                     
                     //Initialize the instructions
@@ -311,8 +311,7 @@
                        
                         
                     } else if (levelIdx == 1) {
-                        var background = game.add.sprite(0, 0, 'bg1');
-                        background.fixedToCamera = true;
+                        level.background.loadTexture('bg');
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
                         level.door.y -= level.door.height + platform.height;
@@ -321,8 +320,7 @@
                         var platform2 = spawnObject(MAP_WIDTH / 2 - 200, MAP_HEIGHT - 350, 'fullround_200', true);
                         
                     } else if (levelIdx == 2) {
-                        var background = game.add.sprite(0, 0, 'bg2');
-                        background.fixedToCamera = true;
+                        level.background.loadTexture('bg1');
                         //Load the terrain blocks
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2), platform.y + platform.height / 2, 'doorclosed');
@@ -338,8 +336,7 @@
                         shape = spawnShape(MAP_WIDTH/2 + 260, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 3) {
-                        var background = game.add.sprite(0, 0, 'bg3');
-                        background.fixedToCamera = true;
+                        level.background.loadTexture('bg2');
                                                //Load the terrain blocks
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT - 210, 'fullround_800', true);
                         level.door = game.add.sprite(platform.x + (0.5 * platform.width / 2) + 100, platform.y + platform.height / 2, 'doorclosed');
@@ -385,8 +382,7 @@
                         spike8.body.angle = 180;
                         spike9.body.angle = 180;
                     } else if (levelIdx == 4) {
-                        var background = game.add.sprite(0, 0, 'bg4');
-                        background.fixedToCamera = true;
+                        level.background.loadTexture('bg3');
                         //Load the terrain blocks
                         //Right Side
                         var platform = spawnObject(MAP_WIDTH / 2 - 14, MAP_HEIGHT - 210, 'fullround_600', true);
@@ -422,9 +418,7 @@
                         shape = spawnShape(MAP_WIDTH/2 + 180, MAP_HEIGHT - 320, "triangle");
                         
                     } else if (levelIdx == 5) {
-                        var background = game.add.sprite(0, 0, 'bg5');
-                        background.fixedToCamera = true;
-                        game.world.sendToBack(background);
+                        level.background.loadTexture('bg4');
                         
                         //Arrange platforms
                         var platform = spawnObject(MAP_WIDTH / 2, MAP_HEIGHT-100, 'fullround_800', true);
